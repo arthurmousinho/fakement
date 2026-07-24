@@ -1,11 +1,12 @@
 import { createApp } from "./app.ts";
+import { env } from "./config/env.ts";
 
 const app = createApp();
 
 try {
   await app.listen({
-    host: '0.0.0.0',
-    port: 3000,
+    host: "0.0.0.0",
+    port: env.PORT,
   });
 } catch (error) {
   app.log.error(error);
