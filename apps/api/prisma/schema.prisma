@@ -6,3 +6,16 @@ generator client {
 datasource db {
   provider = "mysql"
 }
+
+model ApiKey {
+  id String @id @default(uuid())
+
+  name    String
+  keyHash String @map("key_hash")
+
+  revokedAt DateTime? @map("revoked_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("api_keys")
+}
