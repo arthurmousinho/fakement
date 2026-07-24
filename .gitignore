@@ -3,6 +3,8 @@ dist
 node_modules
 build
 
+generated/prisma
+
 # Logs
 logs
 *.log

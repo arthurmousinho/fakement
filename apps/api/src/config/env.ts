@@ -6,6 +6,7 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]),
   HOST: z.string(),
   PORT: z.coerce.number().int().positive(),
+  DATABASE_URL: z.url(),
 });
 
 const result = envSchema.safeParse(process.env);
