@@ -1,7 +1,11 @@
 import crypto from "node:crypto";
 import { prismaSingleton } from "../../config/prisma.ts";
 import type { CreateApiKeyInput } from "../schemas/api-key.schema.ts";
-import { ConflictError, NotFoundError } from "../../common/http-error.ts";
+import {
+  ConflictError,
+  NotFoundError,
+  UnauthorizedError,
+} from "../../common/http-error.ts";
 
 async function create(input: CreateApiKeyInput) {
   const rawKey = crypto.randomBytes(32).toString("hex");
@@ -57,9 +61,28 @@ async function remove(id: string) {
   });
 }
 
+export async function validate(rawKey: string) {
+  const keyHash = crypto.createHash("sha256").update(rawKey).digest("hex");
+
+  const apiKey = await prismaSingleton.apiKey.findUnique({
+    where: { keyHash },
+  });
+
+  if (!apiKey) {
+    throw new UnauthorizedError("Invalid API Key.");
+  }
+
+  if (apiKey.revokedAt) {
+    throw new UnauthorizedError("API Key revoked.");
+  }
+
+  return apiKey;
+}
+
 export const apiKeyService = {
   create,
   findAll,
   revoke,
   remove,
+  validate,
 };
