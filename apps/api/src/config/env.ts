@@ -7,6 +7,11 @@ const envSchema = z.object({
   HOST: z.string(),
   PORT: z.coerce.number().int().positive(),
   DATABASE_URL: z.url(),
+  DATABASE_USER: z.string(),
+  DATABASE_PASSWORD: z.string(),
+  DATABASE_NAME: z.string(),
+  DATABASE_HOST: z.string(),
+  DATABASE_PORT: z.coerce.number().int().positive(),
 });
 
 const result = envSchema.safeParse(process.env);
