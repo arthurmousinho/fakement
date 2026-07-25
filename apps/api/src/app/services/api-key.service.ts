@@ -26,3 +26,20 @@ export async function findAllApiKeys() {
   });
   return apiKeys;
 }
+
+export async function revokeApiKey(id: string) {
+  const apiKey = await prismaSingleton.apiKey.findUnique({ where: { id } });
+
+  if (!apiKey) {
+    throw new Error(`Api Key with ${id} ID not found.`);
+  }
+
+  if (apiKey.revokedAt) {
+    throw new Error(`Api Key with ${id} ID is already revoked.`);
+  }
+
+  await prismaSingleton.apiKey.update({
+    where: { id: apiKey.id },
+    data: { revokedAt: new Date() },
+  });
+}
