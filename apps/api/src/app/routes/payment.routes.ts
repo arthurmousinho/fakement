@@ -9,6 +9,12 @@ export async function paymentRoutes(app: FastifyInstance) {
     return reply.status(200).send(payments);
   });
 
+  app.get("/:id", async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const payment = await paymentService.findById(id);
+    return reply.status(200).send(payment);
+  });
+
   app.post("/", async (request, reply) => {
     const authorization = request.headers.authorization;
     if (!authorization?.startsWith("Bearer ")) {

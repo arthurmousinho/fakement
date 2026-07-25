@@ -1,4 +1,4 @@
-import { ConflictError } from "../../common/http-error.ts";
+import { ConflictError, NotFoundError } from "../../common/http-error.ts";
 import { prismaSingleton } from "../../config/prisma.ts";
 import type { CreatePaymentInput } from "../schemas/payment.schema.ts";
 import { apiKeyService } from "./api-key.service.ts";
@@ -58,7 +58,20 @@ async function findAll() {
   return payments;
 }
 
+async function findById(id: string) {
+  const payment = await prismaSingleton.payment.findUnique({
+    where: { id },
+  });
+
+  if (!payment) {
+    throw new NotFoundError(`Payment with ID ${id} was not found.`);
+  }
+
+  return payment;
+}
+
 export const paymentService = {
   create,
   findAll,
+  findById,
 };
