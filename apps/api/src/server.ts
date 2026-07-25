@@ -1,14 +1,17 @@
 import { createApp } from "./app.ts";
+import { apiKeyRoutes } from "./app/routes/api-key.routes.ts";
 import { env } from "./config/env.ts";
 
-const app = createApp();
+export const appSingleton = createApp();
+
+appSingleton.register(apiKeyRoutes, { prefix: "/api-keys" });
 
 try {
-  await app.listen({
+  await appSingleton.listen({
     host: "0.0.0.0",
     port: env.PORT,
   });
 } catch (error) {
-  app.log.error(error);
+  appSingleton.log.error(error);
   process.exit(1);
 }
