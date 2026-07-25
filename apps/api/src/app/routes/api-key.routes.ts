@@ -1,6 +1,7 @@
 import { createApiKeySchema } from "../schemas/api-key.schema.ts";
 import {
   createApiKey,
+  deleteApiKey,
   findAllApiKeys,
   revokeApiKey,
 } from "../services/api-key.service.ts";
@@ -21,6 +22,12 @@ export async function apiKeyRoutes(app: FastifyInstance) {
   app.patch("/:id/revoke", async (request, reply) => {
     const { id } = request.params as { id: string };
     await revokeApiKey(id);
+    return reply.status(204).send();
+  });
+
+  app.delete("/:id", async (request, reply) => {
+    const { id } = request.params as { id: string };
+    await deleteApiKey(id);
     return reply.status(204).send();
   });
 }

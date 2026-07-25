@@ -43,3 +43,15 @@ export async function revokeApiKey(id: string) {
     data: { revokedAt: new Date() },
   });
 }
+
+export async function deleteApiKey(id: string) {
+  const apiKey = await prismaSingleton.apiKey.findUnique({ where: { id } });
+
+  if (!apiKey) {
+    throw new Error(`Api Key with ${id} ID not found.`);
+  }
+
+  await prismaSingleton.apiKey.delete({
+    where: { id: apiKey.id },
+  });
+}
