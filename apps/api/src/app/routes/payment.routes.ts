@@ -4,6 +4,11 @@ import { paymentService } from "../services/payment.service.ts";
 import type { FastifyInstance } from "fastify";
 
 export async function paymentRoutes(app: FastifyInstance) {
+  app.get("/", async (request, reply) => {
+    const payments = await paymentService.findAll();
+    return reply.status(200).send(payments);
+  });
+
   app.post("/", async (request, reply) => {
     const authorization = request.headers.authorization;
     if (!authorization?.startsWith("Bearer ")) {

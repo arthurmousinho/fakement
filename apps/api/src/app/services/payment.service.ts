@@ -50,10 +50,15 @@ async function create(apiKey: string, input: CreatePaymentInput) {
       status: "CREATED",
     },
   });
-
   return payment;
+}
+
+async function findAll() {
+  const payments = await prismaSingleton.payment.findMany();
+  return payments;
 }
 
 export const paymentService = {
   create,
+  findAll,
 };
