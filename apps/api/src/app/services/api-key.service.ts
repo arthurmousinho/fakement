@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import { prismaSingleton } from "../../config/prisma.ts";
 import type { CreateApiKeyInput } from "../schemas/api-key.schema.ts";
+import { ConflictError, NotFoundError } from "../../common/http-error.ts";
 
 export async function createApiKey(input: CreateApiKeyInput) {
   const rawKey = crypto.randomBytes(32).toString("hex");
@@ -31,11 +32,11 @@ export async function revokeApiKey(id: string) {
   const apiKey = await prismaSingleton.apiKey.findUnique({ where: { id } });
 
   if (!apiKey) {
-    throw new Error(`Api Key with ${id} ID not found.`);
+    throw new NotFoundError(`Api Key with ID ${id} was not found.`);
   }
 
   if (apiKey.revokedAt) {
-    throw new Error(`Api Key with ${id} ID is already revoked.`);
+    throw new ConflictError(`Api Key with ID ${id} was already revoked.`);
   }
 
   await prismaSingleton.apiKey.update({
@@ -48,7 +49,7 @@ export async function deleteApiKey(id: string) {
   const apiKey = await prismaSingleton.apiKey.findUnique({ where: { id } });
 
   if (!apiKey) {
-    throw new Error(`Api Key with ${id} ID not found.`);
+    throw new NotFoundError(`Api Key with ID ${id} was not found.`);
   }
 
   await prismaSingleton.apiKey.delete({

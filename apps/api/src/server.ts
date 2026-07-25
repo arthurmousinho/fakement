@@ -2,6 +2,7 @@ import { ZodError } from "zod";
 import { createApp } from "./app.ts";
 import { apiKeyRoutes } from "./app/routes/api-key.routes.ts";
 import { env } from "./config/env.ts";
+import { HttpError } from "./common/http-error.ts";
 
 export const appSingleton = createApp();
 
@@ -12,6 +13,14 @@ appSingleton.setErrorHandler((error, request, reply) => {
       error: "BAD_REQUEST",
       code: 400,
       message: error.issues.map((issue) => issue.message),
+    });
+  }
+
+  if (error instanceof HttpError) {
+    return reply.status(error.statusCode).send({
+      error: error.error,
+      code: error.statusCode,
+      message: error.message,
     });
   }
 
