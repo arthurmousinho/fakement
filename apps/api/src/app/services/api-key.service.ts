@@ -3,7 +3,7 @@ import { prismaSingleton } from "../../config/prisma.ts";
 import type { CreateApiKeyInput } from "../schemas/api-key.schema.ts";
 import { ConflictError, NotFoundError } from "../../common/http-error.ts";
 
-export async function createApiKey(input: CreateApiKeyInput) {
+async function create(input: CreateApiKeyInput) {
   const rawKey = crypto.randomBytes(32).toString("hex");
   const keyHash = crypto.createHash("sha256").update(rawKey).digest("hex");
 
@@ -21,14 +21,14 @@ export async function createApiKey(input: CreateApiKeyInput) {
   };
 }
 
-export async function findAllApiKeys() {
+async function findAll() {
   const apiKeys = await prismaSingleton.apiKey.findMany({
     omit: { keyHash: true },
   });
   return apiKeys;
 }
 
-export async function revokeApiKey(id: string) {
+async function revoke(id: string) {
   const apiKey = await prismaSingleton.apiKey.findUnique({ where: { id } });
 
   if (!apiKey) {
@@ -45,7 +45,7 @@ export async function revokeApiKey(id: string) {
   });
 }
 
-export async function deleteApiKey(id: string) {
+async function remove(id: string) {
   const apiKey = await prismaSingleton.apiKey.findUnique({ where: { id } });
 
   if (!apiKey) {
@@ -56,3 +56,10 @@ export async function deleteApiKey(id: string) {
     where: { id: apiKey.id },
   });
 }
+
+export const apiKeyService = {
+  create,
+  findAll,
+  revoke,
+  remove,
+};

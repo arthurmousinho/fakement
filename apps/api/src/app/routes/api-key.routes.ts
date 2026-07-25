@@ -1,33 +1,28 @@
 import { createApiKeySchema } from "../schemas/api-key.schema.ts";
-import {
-  createApiKey,
-  deleteApiKey,
-  findAllApiKeys,
-  revokeApiKey,
-} from "../services/api-key.service.ts";
+import { apiKeyService } from "../services/api-key.service.ts";
 import type { FastifyInstance } from "fastify";
 
 export async function apiKeyRoutes(app: FastifyInstance) {
   app.get("/", async (request, reply) => {
-    const apiKeys = await findAllApiKeys();
+    const apiKeys = await apiKeyService.findAll();
     return reply.status(200).send(apiKeys);
   });
 
   app.post("/", async (request, reply) => {
     const input = createApiKeySchema.parse(request.body);
-    const apiKey = await createApiKey(input);
+    const apiKey = await apiKeyService.create(input);
     return reply.status(201).send(apiKey);
   });
 
   app.patch("/:id/revoke", async (request, reply) => {
     const { id } = request.params as { id: string };
-    await revokeApiKey(id);
+    await apiKeyService.revoke(id);
     return reply.status(204).send();
   });
 
   app.delete("/:id", async (request, reply) => {
     const { id } = request.params as { id: string };
-    await deleteApiKey(id);
+    await apiKeyService.remove(id);
     return reply.status(204).send();
   });
 }
