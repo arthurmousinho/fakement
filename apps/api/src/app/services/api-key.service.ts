@@ -19,3 +19,10 @@ export async function createApiKey(input: CreateApiKeyInput) {
     rawKey,
   };
 }
+
+export async function findAllApiKeys() {
+  const apiKeys = await prismaSingleton.apiKey.findMany({
+    omit: { keyHash: true },
+  });
+  return apiKeys;
+}
