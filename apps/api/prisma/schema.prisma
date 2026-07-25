@@ -7,6 +7,26 @@ datasource db {
   provider = "mysql"
 }
 
+enum PaymentStatus {
+  CREATED
+  PROCESSING
+  APPROVED
+  DECLINED
+  CANCELED
+}
+
+enum PaymentCurrency {
+  BRL
+  USD
+  EUR
+}
+
+enum PaymentMethod {
+  CARD
+  PIX
+  BANK_SLIP
+}
+
 model ApiKey {
   id String @id @default(uuid())
 
@@ -17,5 +37,32 @@ model ApiKey {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
 
+  payments Payment[]
+
   @@map("api_keys")
+}
+
+model Payment {
+  id String @id @default(uuid())
+
+  amountInCents Int             @map("amount_in_cents")
+  currency      PaymentCurrency
+  method        PaymentMethod
+  status        PaymentStatus   @default(CREATED)
+
+  description String?
+
+  externalId     String? @map("external_id")
+  idempotencyKey String? @map("idempotency_key")
+
+  apiKeyId String @map("api_key_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  apiKey ApiKey @relation(fields: [apiKeyId], references: [id])
+
+  @@unique([apiKeyId, externalId])
+  @@unique([apiKeyId, idempotencyKey])
+  @@map("payments")
 }
