@@ -1,3 +1,10 @@
+import { Button, Heading } from "@primer/react";
+
 export function App() {
-  return <h1>Fakement</h1>;
+  return (
+    <div>
+      <Heading>Fakement</Heading>
+      <Button variant="primary">Create Payment</Button>
+    </div>
+  );
 }
