@@ -27,4 +27,28 @@ export async function paymentRoutes(app: FastifyInstance) {
 
     return reply.status(201).send(payment);
   });
+
+  app.patch("/:id/approve", async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const payment = await paymentService.changeStatus(id, "APPROVED");
+    return reply.status(200).send(payment);
+  });
+
+  app.patch("/:id/decline", async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const payment = await paymentService.changeStatus(id, "DECLINED");
+    return reply.status(200).send(payment);
+  });
+
+  app.patch("/:id/cancel", async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const payment = await paymentService.changeStatus(id, "CANCELED");
+    return reply.status(200).send(payment);
+  });
+
+  app.patch("/:id/process", async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const payment = await paymentService.changeStatus(id, "PROCESSING");
+    return reply.status(200).send(payment);
+  });
 }

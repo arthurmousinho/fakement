@@ -1,4 +1,9 @@
-import { ConflictError, NotFoundError } from "../../common/http-error.ts";
+import type { PaymentStatus } from "../../../generated/prisma/enums.ts";
+import {
+  BadRequestError,
+  ConflictError,
+  NotFoundError,
+} from "../../common/http-error.ts";
 import { prismaSingleton } from "../../config/prisma.ts";
 import type { CreatePaymentInput } from "../schemas/payment.schema.ts";
 import { apiKeyService } from "./api-key.service.ts";
@@ -70,8 +75,39 @@ async function findById(id: string) {
   return payment;
 }
 
+function validateStatusTransition(
+  currentStatus: PaymentStatus,
+  newStatus: PaymentStatus,
+) {
+  const validTransitions: Record<PaymentStatus, PaymentStatus[]> = {
+    CREATED: ["PROCESSING", "CANCELED"],
+    PROCESSING: ["APPROVED", "DECLINED"],
+    APPROVED: ["CANCELED"],
+    DECLINED: [],
+    CANCELED: [],
+  };
+  const allowed = validTransitions[currentStatus];
+  if (!allowed.includes(newStatus)) {
+    throw new BadRequestError(
+      `Cannot change payment status from ${currentStatus} to ${newStatus}.`,
+    );
+  }
+}
+
+async function changeStatus(id: string, newStatus: PaymentStatus) {
+  const payment = await findById(id);
+  validateStatusTransition(payment.status, newStatus);
+
+  const updatedPayment = await prismaSingleton.payment.update({
+    where: { id },
+    data: { status: newStatus },
+  });
+  return updatedPayment;
+}
+
 export const paymentService = {
   create,
   findAll,
   findById,
+  changeStatus,
 };
