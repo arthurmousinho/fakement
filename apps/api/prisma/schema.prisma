@@ -45,7 +45,8 @@ model ApiKey {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
 
-  payments Payment[]
+  payments         Payment[]
+  webhookEndpoints WebhookEndpoint[]
 
   @@map("api_keys")
 }
@@ -90,4 +91,20 @@ model PaymentEvent {
   @@index([paymentId])
   @@index([type])
   @@map("payment_events")
+}
+
+model WebhookEndpoint {
+  id String @id @default(uuid())
+
+  url      String
+  secret   String
+  enabled  Boolean @default(true)
+  apiKeyId String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  apiKey ApiKey @relation(fields: [apiKeyId], references: [id])
+
+  @@map("webhook_endpoints")
 }
