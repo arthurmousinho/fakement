@@ -19,6 +19,7 @@ async function createEndpoint(
   return await prismaSingleton.webhookEndpoint.create({
     data: {
       url: input.url,
+      events: input.events,
       secret: generateSecret(),
       apiKeyId: validatedApiKey.id,
     },
@@ -53,8 +54,11 @@ async function updateEndpoint(
   return await prismaSingleton.webhookEndpoint.update({
     where: { id: endpoint.id },
     data: {
-      url: input.url ?? endpoint.url,
-      enabled: input.enabled ?? endpoint.enabled,
+      ...(input.url !== undefined && { url: input.url }),
+      ...(input.enabled !== undefined && { enabled: input.enabled }),
+      ...(input.events !== undefined && {
+        events: input.events,
+      }),
     },
     omit: { secret: true },
   });

@@ -99,7 +99,7 @@ model WebhookEndpoint {
   url      String
   secret   String
   enabled  Boolean @default(true)
-  event    Json // String[] is not supported by MySQL
+  events   Json // String[] is not supported by MySQL
   apiKeyId String
 
   createdAt DateTime @default(now()) @map("created_at")
