@@ -104,7 +104,23 @@ model WebhookEndpoint {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  apiKey ApiKey @relation(fields: [apiKeyId], references: [id])
+  apiKey        ApiKey                @relation(fields: [apiKeyId], references: [id])
+  subscriptions WebhookSubscription[]
 
   @@map("webhook_endpoints")
+}
+
+model WebhookSubscription {
+  id String @id @default(uuid())
+
+  endpointId String           @map("endpoint_id")
+  event      PaymentEventType
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  endpoint WebhookEndpoint @relation(fields: [endpointId], references: [id])
+
+  @@unique([endpointId, event])
+  @@index([event])
+  @@map("webhook_subscriptions")
 }
