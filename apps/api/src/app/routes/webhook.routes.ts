@@ -9,6 +9,12 @@ export async function webhookRoutes(app: FastifyInstance) {
     return reply.status(200).send(endpoints);
   });
 
+  app.get("/endpoints/:id", async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const endpoint = await webhookService.findEndpointById(id);
+    return reply.status(200).send(endpoint);
+  });
+
   app.post("/endpoints", async (request, reply) => {
     const authorization = request.headers.authorization;
     if (!authorization?.startsWith("Bearer ")) {
