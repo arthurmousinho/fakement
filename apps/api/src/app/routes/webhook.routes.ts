@@ -37,4 +37,10 @@ export async function webhookRoutes(app: FastifyInstance) {
     const updatedEndpoint = await webhookService.updateEndpoint(id, input);
     return reply.status(200).send(updatedEndpoint);
   });
+
+  app.delete("/endpoints/:id", async (request, reply) => {
+    const { id } = request.params as { id: string };
+    await webhookService.deleteEndpoint(id);
+    return reply.status(204).send();
+  });
 }

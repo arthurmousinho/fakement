@@ -60,9 +60,17 @@ async function updateEndpoint(
   });
 }
 
+async function deleteEndpoint(endpointId: string) {
+  const endpoint = await findEndpointById(endpointId);
+  await prismaSingleton.webhookEndpoint.delete({
+    where: { id: endpoint.id },
+  });
+}
+
 export const webhookService = {
   createEndpoint,
   findAllEndpoints,
   findEndpointById,
   updateEndpoint,
+  deleteEndpoint,
 };
