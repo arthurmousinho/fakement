@@ -27,6 +27,14 @@ enum PaymentMethod {
   BANK_SLIP
 }
 
+enum PaymentEventType {
+  PAYMENT_CREATED
+  PAYMENT_PROCESSING
+  PAYMENT_APPROVED
+  PAYMENT_DECLINED
+  PAYMENT_CANCELED
+}
+
 model ApiKey {
   id String @id @default(uuid())
 
@@ -60,9 +68,26 @@ model Payment {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  apiKey ApiKey @relation(fields: [apiKeyId], references: [id])
+  apiKey ApiKey         @relation(fields: [apiKeyId], references: [id])
+  events PaymentEvent[]
 
   @@unique([apiKeyId, externalId])
   @@unique([apiKeyId, idempotencyKey])
   @@map("payments")
+}
+
+model PaymentEvent {
+  id String @id @default(uuid())
+
+  paymentId String
+  type      PaymentEventType
+  payload   Json?
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  payment Payment @relation(fields: [paymentId], references: [id])
+
+  @@index([paymentId])
+  @@index([type])
+  @@map("payment_events")
 }
