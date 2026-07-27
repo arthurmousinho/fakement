@@ -21,6 +21,13 @@ async function createEndpoint(
   return webhookEndpoint;
 }
 
+async function findAllEndpoints() {
+  return await prismaSingleton.webhookEndpoint.findMany({
+    omit: { secret: true },
+  });
+}
+
 export const webhookService = {
   createEndpoint,
+  findAllEndpoints,
 };

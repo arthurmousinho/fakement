@@ -4,6 +4,11 @@ import { createWebhookEndpointSchema } from "../schemas/webhook.schema.ts";
 import { webhookService } from "../services/webhook.service.ts";
 
 export async function webhookRoutes(app: FastifyInstance) {
+  app.get("/endpoints", async (request, reply) => {
+    const endpoints = await webhookService.findAllEndpoints();
+    return reply.status(200).send(endpoints);
+  });
+
   app.post("/endpoints", async (request, reply) => {
     const authorization = request.headers.authorization;
     if (!authorization?.startsWith("Bearer ")) {
