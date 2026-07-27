@@ -1,4 +1,7 @@
-import type { PaymentStatus } from "../../../generated/prisma/enums.ts";
+import type {
+  PaymentEventType,
+  PaymentStatus,
+} from "../../../generated/prisma/enums.ts";
 import {
   BadRequestError,
   ConflictError,
@@ -55,6 +58,11 @@ async function create(apiKey: string, input: CreatePaymentInput) {
       status: "CREATED",
     },
   });
+  await saveEvent({
+    paymentId: payment.id,
+    type: "PAYMENT_CREATED",
+  });
+
   return payment;
 }
 
@@ -99,10 +107,30 @@ async function changeStatus(id: string, newStatus: PaymentStatus) {
   validateStatusTransition(payment.status, newStatus);
 
   const updatedPayment = await prismaSingleton.payment.update({
-    where: { id },
+    where: { id: payment.id },
     data: { status: newStatus },
   });
+
+  await saveEvent({
+    paymentId: payment.id,
+    type: `PAYMENT_${newStatus}`,
+  });
+
   return updatedPayment;
+}
+
+async function saveEvent(input: {
+  type: PaymentEventType;
+  paymentId: string;
+  payload?: unknown;
+}) {
+  return await prismaSingleton.paymentEvent.create({
+    data: {
+      type: input.type,
+      paymentId: input.paymentId,
+      payload: input.payload ?? {},
+    },
+  });
 }
 
 export const paymentService = {

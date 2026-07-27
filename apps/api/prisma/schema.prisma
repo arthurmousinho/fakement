@@ -79,7 +79,7 @@ model Payment {
 model PaymentEvent {
   id String @id @default(uuid())
 
-  paymentId String
+  paymentId String           @map("payment_id")
   type      PaymentEventType
   payload   Json?
 
