@@ -1,0 +1,19 @@
+import { UnauthorizedError } from "../../common/http-error.ts";
+import type { FastifyInstance } from "fastify";
+import { createWebhookEndpointSchema } from "../schemas/webhook.schema.ts";
+import { webhookService } from "../services/webhook.service.ts";
+
+export async function webhookRoutes(app: FastifyInstance) {
+  app.post("/endpoints", async (request, reply) => {
+    const authorization = request.headers.authorization;
+    if (!authorization?.startsWith("Bearer ")) {
+      throw new UnauthorizedError("Api Key is missing.");
+    }
+
+    const apiKey = authorization.slice("Bearer ".length);
+    const input = createWebhookEndpointSchema.parse(request.body);
+    const endpoint = await webhookService.createEndpoint(apiKey, input);
+
+    return reply.status(201).send(endpoint);
+  });
+}

@@ -4,6 +4,7 @@ import { apiKeyRoutes } from "./app/routes/api-key.routes.ts";
 import { env } from "./config/env.ts";
 import { HttpError } from "./common/http-error.ts";
 import { paymentRoutes } from "./app/routes/payment.routes.ts";
+import { webhookRoutes } from "./app/routes/webhook.routes.ts";
 
 export const appSingleton = createApp();
 
@@ -37,6 +38,7 @@ appSingleton.setErrorHandler((error, request, reply) => {
 // Routes
 appSingleton.register(apiKeyRoutes, { prefix: "/api-keys" });
 appSingleton.register(paymentRoutes, { prefix: "/payments" });
+appSingleton.register(webhookRoutes, { prefix: "/webhooks" });
 
 try {
   await appSingleton.listen({
