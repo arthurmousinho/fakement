@@ -1,6 +1,9 @@
 import { UnauthorizedError } from "../../common/http-error.ts";
 import type { FastifyInstance } from "fastify";
-import { createWebhookEndpointSchema } from "../schemas/webhook.schema.ts";
+import {
+  createWebhookEndpointSchema,
+  updateWebhookEndpointSchema,
+} from "../schemas/webhook.schema.ts";
 import { webhookService } from "../services/webhook.service.ts";
 
 export async function webhookRoutes(app: FastifyInstance) {
@@ -26,5 +29,12 @@ export async function webhookRoutes(app: FastifyInstance) {
     const endpoint = await webhookService.createEndpoint(apiKey, input);
 
     return reply.status(201).send(endpoint);
+  });
+
+  app.patch("/endpoints/:id", async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const input = updateWebhookEndpointSchema.parse(request.body);
+    const updatedEndpoint = await webhookService.updateEndpoint(id, input);
+    return reply.status(200).send(updatedEndpoint);
   });
 }

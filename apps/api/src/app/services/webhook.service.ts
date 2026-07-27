@@ -1,5 +1,8 @@
 import { randomBytes } from "node:crypto";
-import type { CreateWebhookEndpointInput } from "../schemas/webhook.schema.ts";
+import type {
+  CreateWebhookEndpointInput,
+  UpdateWebhookEndpointInput,
+} from "../schemas/webhook.schema.ts";
 import { prismaSingleton } from "../../config/prisma.ts";
 import { apiKeyService } from "./api-key.service.ts";
 import { NotFoundError } from "../../common/http-error.ts";
@@ -42,8 +45,24 @@ async function findEndpointById(endpointId: string) {
   return endpoint;
 }
 
+async function updateEndpoint(
+  endpointId: string,
+  input: UpdateWebhookEndpointInput,
+) {
+  const endpoint = await findEndpointById(endpointId);
+  return await prismaSingleton.webhookEndpoint.update({
+    where: { id: endpoint.id },
+    data: {
+      url: input.url ?? endpoint.url,
+      enabled: input.enabled ?? endpoint.enabled,
+    },
+    omit: { secret: true },
+  });
+}
+
 export const webhookService = {
   createEndpoint,
   findAllEndpoints,
   findEndpointById,
+  updateEndpoint,
 };
