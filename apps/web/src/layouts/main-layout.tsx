@@ -5,6 +5,7 @@ import {
   WebhookIcon,
   KeyIcon,
 } from "@primer/octicons-react";
+import { Outlet } from "react-router-dom";
 
 function AppHeader() {
   return (
@@ -69,25 +70,7 @@ function Sidebar() {
   );
 }
 
-function Content() {
-  return (
-    <div
-      style={{
-        padding: 4,
-        minHeight: 300,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "canvas.subtle",
-        color: "fg.muted",
-      }}
-    >
-      Conteúdo
-    </div>
-  );
-}
-
-export function App() {
+export function MainLayout() {
   return (
     <PageLayout>
       <PageLayout.Header>
@@ -97,7 +80,7 @@ export function App() {
         <Sidebar />
       </PageLayout.Pane>
       <PageLayout.Content>
-        <Content />
+        <Outlet />
       </PageLayout.Content>
     </PageLayout>
   );
