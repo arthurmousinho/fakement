@@ -7,22 +7,22 @@ import { prismaSingleton } from "../../config/prisma.ts";
 import { apiKeyService } from "./api-key.service.ts";
 import { NotFoundError } from "../../common/http-error.ts";
 
+function generateSecret() {
+  return `whsec_${randomBytes(32).toString("hex")}`;
+}
+
 async function createEndpoint(
   apiKey: string,
   input: CreateWebhookEndpointInput,
 ) {
   const validatedApiKey = await apiKeyService.validate(apiKey);
-  const secret = `whsec_${randomBytes(32).toString("hex")}`;
-
-  const endpoint = await prismaSingleton.webhookEndpoint.create({
+  return await prismaSingleton.webhookEndpoint.create({
     data: {
       url: input.url,
-      secret,
+      secret: generateSecret(),
       apiKeyId: validatedApiKey.id,
     },
   });
-
-  return endpoint;
 }
 
 async function findAllEndpoints() {
@@ -67,10 +67,20 @@ async function deleteEndpoint(endpointId: string) {
   });
 }
 
+async function revokeEndpointSecret(endpointId: string) {
+  const endpoint = await findEndpointById(endpointId);
+  const newSecret = generateSecret();
+  return await prismaSingleton.webhookEndpoint.update({
+    where: { id: endpoint.id },
+    data: { secret: newSecret },
+  });
+}
+
 export const webhookService = {
   createEndpoint,
   findAllEndpoints,
   findEndpointById,
   updateEndpoint,
   deleteEndpoint,
+  revokeEndpointSecret,
 };
