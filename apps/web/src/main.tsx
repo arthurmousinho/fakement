@@ -1,15 +1,14 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { BaseStyles, ThemeProvider } from "@primer/react";
-import { RouterProvider } from "react-router-dom";
-import { router } from "./config/router";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
+import "./index.css";
+import { App } from "./App.tsx";
+import { ThemeProvider } from "@/components/theme-provider.tsx";
+
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
     <ThemeProvider>
-      <BaseStyles>
-        <RouterProvider router={router} />
-      </BaseStyles>
+      <App />
     </ThemeProvider>
-  </React.StrictMode>,
+  </StrictMode>,
 );
