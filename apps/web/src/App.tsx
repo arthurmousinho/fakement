@@ -1,10 +1,9 @@
-import { Button } from "./components/ui/button";
+import { Header } from "./components/header";
 
 export function App() {
   return (
-    <div>
-      <h1>Fakement</h1>
-      <Button>Pay</Button>
+    <div className="max-w-[90%] mx-auto py-6">
+      <Header />
     </div>
   );
 }
