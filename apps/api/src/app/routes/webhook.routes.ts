@@ -7,6 +7,12 @@ import {
 import { webhookService } from "../services/webhook.service.ts";
 
 export async function webhookRoutes(app: FastifyInstance) {
+  app.post("/test", async (request, reply) => {
+    // Mock for webhook dispatch
+    console.log(request.body);
+    return reply.status(200).send();
+  });
+
   app.get("/endpoints", async (request, reply) => {
     const endpoints = await webhookService.findAllEndpoints();
     return reply.status(200).send(endpoints);

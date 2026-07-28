@@ -61,7 +61,7 @@ async function remove(id: string) {
   });
 }
 
-export async function validate(rawKey: string) {
+async function validate(rawKey: string) {
   const keyHash = crypto.createHash("sha256").update(rawKey).digest("hex");
 
   const apiKey = await prismaSingleton.apiKey.findUnique({
