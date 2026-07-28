@@ -35,6 +35,12 @@ enum PaymentEventType {
   PAYMENT_CANCELED
 }
 
+enum WebhookDeliveryStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
 model ApiKey {
   id String @id @default(uuid())
 
@@ -86,7 +92,8 @@ model PaymentEvent {
 
   createdAt DateTime @default(now()) @map("created_at")
 
-  payment Payment @relation(fields: [paymentId], references: [id])
+  payment           Payment           @relation(fields: [paymentId], references: [id])
+  webhookDeliveries WebhookDelivery[]
 
   @@index([paymentId])
   @@index([type])
@@ -105,7 +112,30 @@ model WebhookEndpoint {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  apiKey ApiKey @relation(fields: [apiKeyId], references: [id])
+  apiKey            ApiKey            @relation(fields: [apiKeyId], references: [id])
+  webhookDeliveries WebhookDelivery[]
 
   @@map("webhook_endpoints")
+}
+
+model WebhookDelivery {
+  id String @id @default(uuid())
+
+  status     WebhookDeliveryStatus @default(PENDING)
+  statusCode Int?                  @map("status_code")
+  error      String?
+
+  endpointId     String @map("endpoint_id")
+  paymentEventId String @map("payment_event_id")
+
+  deliveredAt DateTime? @map("delivered_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  endpoint     WebhookEndpoint @relation(fields: [endpointId], references: [id])
+  paymentEvent PaymentEvent    @relation(fields: [paymentEventId], references: [id])
+
+  @@index([endpointId])
+  @@index([paymentEventId])
+  @@index([status])
+  @@map("webhook_deliveries")
 }
