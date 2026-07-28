@@ -1,4 +1,5 @@
-import { Button } from "./ui/button";
+import { Link } from "react-router-dom";
+import { Button, buttonVariants } from "./ui/button";
 import { Card } from "./ui/card";
 import {
   CardholderIcon,
@@ -10,6 +11,7 @@ import {
   BookOpenIcon,
   GaugeIcon,
 } from "@phosphor-icons/react";
+import { cn } from "@/lib/utils";
 
 const navigationLinks = [
   { label: "Dashboard", href: "/", icon: GaugeIcon },
@@ -22,19 +24,23 @@ const navigationLinks = [
 
 export function Header() {
   return (
-    <Card className="flex flex-row items-center justify-between w-full py-0 p-4 bg-slate-100 rounded">
+    <Card className="flex flex-row items-center justify-between w-full py-0 px-6 py-4 bg-slate-100 rounded">
       <div className="flex items-center gap-2 text-lg font-medium text-primary">
         <CardholderIcon size={32} />
         <h1>Fakement</h1>
       </div>
       <nav className="space-x-4">
-        {navigationLinks.map((link) => {
+        {navigationLinks.map((link, index) => {
           const Icon = link.icon;
           return (
-            <Button key={link.href} variant="secondary">
+            <Link
+              to={link.href}
+              key={index}
+              className={cn(buttonVariants({ variant: "secondary" }))}
+            >
               <Icon size={18} />
               {link.label}
-            </Button>
+            </Link>
           );
         })}
         <Button variant="outline">
