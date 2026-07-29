@@ -8,7 +8,7 @@ export const router = createBrowserRouter([
     element: <MainLayout />,
     children: [
       { path: "", element: <h1>dahboard</h1> },
-      { path: "api-keys", element: ApiKeysPage() },
+      { path: "api-keys", element: <ApiKeysPage /> },
     ],
   },
 ]);
