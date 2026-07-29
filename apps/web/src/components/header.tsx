@@ -2,6 +2,12 @@ import { Link } from "react-router-dom";
 import { Button, buttonVariants } from "./ui/button";
 import { Card } from "./ui/card";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import {
   CardholderIcon,
   GithubLogoIcon,
   KeyIcon,
@@ -10,8 +16,12 @@ import {
   ReceiptIcon,
   BookOpenIcon,
   GaugeIcon,
+  SunIcon,
+  MoonIcon,
+  DesktopIcon,
 } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
+import { useTheme } from "./theme-provider";
 
 const navigationLinks = [
   { label: "Dashboard", href: "/", icon: GaugeIcon },
@@ -23,13 +33,15 @@ const navigationLinks = [
 ] as const;
 
 export function Header() {
+  const { setTheme } = useTheme();
+
   return (
-    <Card className="flex flex-row items-center justify-between w-full px-6 py-4 bg-slate-100 rounded">
+    <Card className="flex flex-row items-center justify-between w-full px-6 py-4 bg-slate-100 dark:bg-muted rounded">
       <div className="flex items-center gap-2 text-lg font-medium text-primary">
         <CardholderIcon size={32} />
         <h1>Fakement</h1>
       </div>
-      <nav className="space-x-4">
+      <nav className="flex items-center space-x-2">
         {navigationLinks.map((link, index) => {
           const Icon = link.icon;
           return (
@@ -43,6 +55,36 @@ export function Header() {
             </Link>
           );
         })}
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="icon">
+              <SunIcon
+                size={18}
+                className="scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90"
+              />
+              <MoonIcon
+                size={18}
+                className="absolute scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0"
+              />
+              <span className="sr-only">Alternar tema</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setTheme("light")}>
+              <SunIcon size={16} />
+              Light
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme("dark")}>
+              <MoonIcon size={16} />
+              Dark
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme("system")}>
+              <DesktopIcon size={16} />
+              System
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <Button variant="outline">
           <GithubLogoIcon size={32} />
           Star on GitHub
