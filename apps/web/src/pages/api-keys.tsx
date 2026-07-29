@@ -18,13 +18,11 @@ import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { formatDateTime } from "@/lib/formatters";
+import { ApiKeyFormDialog } from "@/components/api-key-form-dialog";
 
 export function ApiKeysPage() {
   const data = [
@@ -59,10 +57,12 @@ export function ApiKeysPage() {
             flows just like you would with a real payment provider.
           </p>
         </div>
-        <Button>
-          <PlusIcon size={18} />
-          New API Key
-        </Button>
+        <ApiKeyFormDialog>
+          <Button>
+            <PlusIcon size={18} />
+            New API Key
+          </Button>
+        </ApiKeyFormDialog>
       </header>
       <div>
         <Table>

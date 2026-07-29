@@ -24,7 +24,7 @@ const navigationLinks = [
 
 export function Header() {
   return (
-    <Card className="flex flex-row items-center justify-between w-full py-0 px-6 py-4 bg-slate-100 rounded">
+    <Card className="flex flex-row items-center justify-between w-full px-6 py-4 bg-slate-100 rounded">
       <div className="flex items-center gap-2 text-lg font-medium text-primary">
         <CardholderIcon size={32} />
         <h1>Fakement</h1>
