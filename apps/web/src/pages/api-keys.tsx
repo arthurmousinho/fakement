@@ -16,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatDateTime } from "@/lib/formatters";
-import { GetApiKeysRequest } from "@/http/api-keys-http";
+import { FindAllApiKeysRequest } from "@/http/api-keys-http";
 import {
   ArrowClockwiseIcon,
   DotsThreeIcon,
@@ -26,7 +26,7 @@ import {
 } from "@phosphor-icons/react";
 
 export function ApiKeysPage() {
-  const { data, isPending, isError, refetch } = GetApiKeysRequest();
+  const { data, isPending, isError, refetch } = FindAllApiKeysRequest();
 
   if (isPending) {
     return <div>Loading...</div>;
