@@ -16,7 +16,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatDateTime } from "@/lib/formatters";
-import { FindAllApiKeysRequest } from "@/http/api-keys-http";
+import {
+  DeleteApiKeyRequest,
+  FindAllApiKeysRequest,
+} from "@/http/api-keys-http";
 import {
   ArrowClockwiseIcon,
   DotsThreeIcon,
@@ -27,6 +30,8 @@ import {
 
 export function ApiKeysPage() {
   const { data, isPending, isError, refetch } = FindAllApiKeysRequest();
+  const { mutate: deleteRequest, isPending: isDeleting } =
+    DeleteApiKeyRequest();
 
   if (isPending) {
     return <div>Loading...</div>;
@@ -42,6 +47,11 @@ export function ApiKeysPage() {
         <Button onClick={() => refetch()}>Try again</Button>
       </div>
     );
+  }
+
+  function handleDelete(id: string) {
+    if (isDeleting) return;
+    deleteRequest(id);
   }
 
   return (
@@ -107,7 +117,11 @@ export function ApiKeysPage() {
                       <ArrowClockwiseIcon size={32} />
                       Revoke
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="text-destructive">
+                    <DropdownMenuItem
+                      className="text-destructive"
+                      onClick={() => handleDelete(item.id)}
+                      disabled={isDeleting}
+                    >
                       <TrashIcon size={32} />
                       Delete
                     </DropdownMenuItem>

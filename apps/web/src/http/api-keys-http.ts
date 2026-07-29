@@ -44,3 +44,16 @@ export function CreateApiKeyRequest() {
     onError: apiErrorHandler,
   });
 }
+
+export function DeleteApiKeyRequest() {
+  return useMutation({
+    mutationFn: async (id: string) => {
+      await api.delete(`api-keys/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["api-keys"] });
+      toast.success("API key deleted successfully.");
+    },
+    onError: apiErrorHandler,
+  });
+}
