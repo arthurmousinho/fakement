@@ -1,3 +1,4 @@
+import cors from "@fastify/cors";
 import { ZodError } from "zod";
 import { createApp } from "./app.ts";
 import { apiKeyRoutes } from "./app/routes/api-key.routes.ts";
@@ -7,6 +8,12 @@ import { paymentRoutes } from "./app/routes/payment.routes.ts";
 import { webhookRoutes } from "./app/routes/webhook.routes.ts";
 
 export const appSingleton = createApp();
+
+// CORS
+appSingleton.register(cors, {
+  methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
+  origin: env.WEB_URL,
+});
 
 // Errors
 appSingleton.setErrorHandler((error, request, reply) => {
