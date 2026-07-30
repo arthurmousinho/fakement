@@ -1,4 +1,4 @@
-import type { Currency } from "@/components/currency-badge";
+import type { Currency } from "@/components/payment-currency-badge";
 
 export function formatDateTime(date: Date | string | number): string {
   return new Intl.DateTimeFormat("en-US", {

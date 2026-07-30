@@ -1,15 +1,14 @@
 import { Badge } from "@/components/ui/badge";
+import type { PaymentCurrency } from "@/http/payments-http";
 import { cn } from "@/lib/utils";
 
-export type Currency = "BRL" | "USD" | "EUR";
-
 type CurrencyBadgeProps = {
-  currency: Currency;
+  currency: PaymentCurrency;
   className?: string;
 };
 
 const CURRENCY_CONFIG: Record<
-  Currency,
+  PaymentCurrency,
   { emoji: string; label: string; className: string }
 > = {
   BRL: {
@@ -32,7 +31,10 @@ const CURRENCY_CONFIG: Record<
   },
 };
 
-export function CurrencyBadge({ currency, className }: CurrencyBadgeProps) {
+export function PaymentCurrencyBadge({
+  currency,
+  className,
+}: CurrencyBadgeProps) {
   const {
     emoji,
     label,

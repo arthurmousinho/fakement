@@ -1,5 +1,6 @@
 // components/payment-status-badge.tsx
 import { Badge } from "@/components/ui/badge";
+import type { PaymentStatus } from "@/http/payments-http";
 import { cn } from "@/lib/utils";
 import {
   ClockIcon,
@@ -8,9 +9,6 @@ import {
   XCircleIcon,
   ProhibitIcon,
 } from "@phosphor-icons/react";
-
-type PaymentStatus =
-  "CREATED" | "PROCESSING" | "APPROVED" | "DECLINED" | "CANCELED";
 
 type PaymentStatusBadgeProps = {
   status: PaymentStatus;

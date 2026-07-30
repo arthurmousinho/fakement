@@ -1,4 +1,4 @@
-import { CurrencyBadge } from "@/components/currency-badge";
+import { PaymentCurrencyBadge } from "@/components/payment-currency-badge";
 import { PaymentMethodBadge } from "@/components/payment-method-badge";
 import { PaymentStatusBadge } from "@/components/payment-status-badge";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { FindAllPaymentsRequest } from "@/http/payments-http";
 import { formatCurrencyFromCents, formatDateTime } from "@/lib/formatters";
 import {
   CheckIcon,
@@ -28,21 +29,22 @@ import {
 } from "@phosphor-icons/react";
 
 export function PaymentsPage() {
-  const data = [
-    {
-      id: "358e46a1-0307-49cf-9578-84403537db5a",
-      amountInCents: 20000,
-      currency: "BRL",
-      method: "PIX",
-      status: "APPROVED",
-      description: null,
-      externalId: null,
-      idempotencyKey: null,
-      apiKeyId: "b974efc1-f241-48d9-bef4-093046ae5830",
-      createdAt: "2026-07-28T13:44:25.452Z",
-      updatedAt: "2026-07-28T13:44:43.862Z",
-    },
-  ];
+  const { data, isPending, isError, refetch } = FindAllPaymentsRequest();
+
+  if (isPending) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center gap-4 py-10">
+        <p className="text-sm text-muted-foreground">
+          Failed to load Payments.
+        </p>
+        <Button onClick={() => refetch()}>Try again</Button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -80,16 +82,16 @@ export function PaymentsPage() {
             <TableRow key={item.id}>
               <TableCell>{item.id}</TableCell>
               <TableCell className="text-right">
-                {formatCurrencyFromCents(item.amountInCents, "BRL")}
+                {formatCurrencyFromCents(item.amountInCents, item.currency)}
               </TableCell>
               <TableCell className="text-right">
-                <CurrencyBadge currency={"BRL"} />
+                <PaymentCurrencyBadge currency={item.currency} />
               </TableCell>
               <TableCell className="text-right">
-                <PaymentMethodBadge method="PIX" />
+                <PaymentMethodBadge method={item.method} />
               </TableCell>
               <TableCell className="text-right">
-                <PaymentStatusBadge status="APPROVED" />
+                <PaymentStatusBadge status={item.status} />
               </TableCell>
               <TableCell className="text-right">
                 {formatDateTime(item.createdAt)}

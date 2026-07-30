@@ -1,8 +1,7 @@
 import { Badge } from "@/components/ui/badge";
+import type { PaymentMethod } from "@/http/payments-http";
 import { cn } from "@/lib/utils";
 import { CreditCardIcon, QrCodeIcon, BarcodeIcon } from "@phosphor-icons/react";
-
-type PaymentMethod = "CARD" | "PIX" | "BANK_SLIP";
 
 type PaymentMethodBadgeProps = {
   method: PaymentMethod;
