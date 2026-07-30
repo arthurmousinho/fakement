@@ -57,3 +57,16 @@ export function DeleteApiKeyRequest() {
     onError: apiErrorHandler,
   });
 }
+
+export function RevokeApiKeyRequest() {
+  return useMutation({
+    mutationFn: async (id: string) => {
+      await api.patch(`api-keys/${id}/revoke`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["api-keys"] });
+      toast.success("API key revoked successfully.");
+    },
+    onError: apiErrorHandler,
+  });
+}

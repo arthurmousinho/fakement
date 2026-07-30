@@ -19,9 +19,10 @@ import { formatDateTime } from "@/lib/formatters";
 import {
   DeleteApiKeyRequest,
   FindAllApiKeysRequest,
+  RevokeApiKeyRequest,
 } from "@/http/api-keys-http";
 import {
-  ArrowClockwiseIcon,
+  ProhibitIcon,
   DotsThreeIcon,
   KeyIcon,
   PlusIcon,
@@ -32,6 +33,8 @@ export function ApiKeysPage() {
   const { data, isPending, isError, refetch } = FindAllApiKeysRequest();
   const { mutate: deleteRequest, isPending: isDeleting } =
     DeleteApiKeyRequest();
+  const { mutate: revokeRequest, isPending: isRevoking } =
+    RevokeApiKeyRequest();
 
   if (isPending) {
     return <div>Loading...</div>;
@@ -52,6 +55,11 @@ export function ApiKeysPage() {
   function handleDelete(id: string) {
     if (isDeleting) return;
     deleteRequest(id);
+  }
+
+  function handleRevoke(id: string) {
+    if (isRevoking) return;
+    revokeRequest(id);
   }
 
   return (
@@ -113,8 +121,11 @@ export function ApiKeysPage() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent side="right">
-                    <DropdownMenuItem>
-                      <ArrowClockwiseIcon size={32} />
+                    <DropdownMenuItem
+                      onClick={() => handleRevoke(item.id)}
+                      disabled={Boolean(item.revokedAt) || isRevoking}
+                    >
+                      <ProhibitIcon size={32} />
                       Revoke
                     </DropdownMenuItem>
                     <DropdownMenuItem
