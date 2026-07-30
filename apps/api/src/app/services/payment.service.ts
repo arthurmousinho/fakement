@@ -88,6 +88,30 @@ async function findById(id: string) {
   return payment;
 }
 
+async function getDetails(id: string) {
+  const payment = await prismaSingleton.payment.findUnique({
+    where: { id },
+    include: {
+      events: {
+        select: {
+          id: true,
+          type: true,
+          createdAt: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
+    },
+  });
+
+  if (!payment) {
+    throw new NotFoundError(`Payment with ID ${id} was not found.`);
+  }
+
+  return payment;
+}
+
 function validateStatusTransition(
   currentStatus: PaymentStatus,
   newStatus: PaymentStatus,
@@ -130,4 +154,5 @@ export const paymentService = {
   findAll,
   findById,
   changeStatus,
+  getDetails,
 };

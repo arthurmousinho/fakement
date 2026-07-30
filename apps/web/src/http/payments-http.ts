@@ -2,6 +2,7 @@ import { api, apiErrorHandler } from "@/lib/ky";
 import { queryClient } from "@/lib/query-client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
+import type { PaymentEventType } from "./payment-events-http";
 
 export type PaymentCurrency = "BRL" | "USD" | "EUR";
 export type PaymentMethod = "CARD" | "PIX" | "BANK_SLIP";
@@ -29,6 +30,28 @@ export function FindAllPaymentsRequest() {
       const request = await api.get("payments");
       return await request.json<Payment[]>();
     },
+  });
+}
+
+export type DetailedPayment = Payment & {
+  events: {
+    id: string;
+    type: PaymentEventType;
+    createdAt: string;
+  }[];
+};
+
+export function GetPaymentDetailsRequest(
+  id: string,
+  options?: { enabled?: boolean },
+) {
+  return useQuery({
+    queryKey: ["payments", id],
+    queryFn: async () => {
+      const request = await api.get(`payments/${id}`);
+      return await request.json<DetailedPayment>();
+    },
+    enabled: options?.enabled ?? true,
   });
 }
 

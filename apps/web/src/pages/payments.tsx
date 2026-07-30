@@ -144,7 +144,7 @@ export function PaymentsPage() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent side="right">
-                    <PaymentDetailsDialog payment={item}>
+                    <PaymentDetailsDialog id={item.id}>
                       <DropdownMenuItem
                         onSelect={(event) => event.preventDefault()}
                       >
