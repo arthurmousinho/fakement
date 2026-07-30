@@ -1,3 +1,5 @@
+![fakement-banner](./.github/banner.png)
+
 # Fakement
 
 > A local-first fake payment gateway for developing and testing payment integrations.
@@ -17,20 +19,3 @@ Integrating with payment providers during development can be slow and frustratin
 - Difficult to reproduce edge cases
 
 Fakement solves these problems by providing a local payment gateway that behaves like a real one.
-
-## Features
-
-- REST API
-- Payment lifecycle simulation
-- Card payments
-- PIX payments
-- Boleto payments
-- Payment authorization
-- Payment capture
-- Refunds
-- Payment cancellation
-- Webhook simulation
-- Configurable payment scenarios
-- Local-first
-- Docker support
-- OpenAPI documentation
