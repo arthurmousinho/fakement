@@ -17,7 +17,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { FindAllPaymentsRequest } from "@/http/payments-http";
+import {
+  ApprovePaymentRequest,
+  CancelPaymentRequest,
+  DeclinePaymentRequest,
+  FindAllPaymentsRequest,
+  ProcessPaymentRequest,
+  type PaymentStatus,
+} from "@/http/payments-http";
 import { formatCurrencyFromCents, formatDateTime } from "@/lib/formatters";
 import {
   CheckIcon,
@@ -31,6 +38,14 @@ import {
 
 export function PaymentsPage() {
   const { data, isPending, isError, refetch } = FindAllPaymentsRequest();
+  const { mutate: proccessRequest, isPending: isProcessing } =
+    ProcessPaymentRequest();
+  const { mutate: approveRequest, isPending: isApproving } =
+    ApprovePaymentRequest();
+  const { mutate: declineRequest, isPending: isDeclining } =
+    DeclinePaymentRequest();
+  const { mutate: cancelRequest, isPending: isCanceling } =
+    CancelPaymentRequest();
 
   if (isPending) {
     return <div>Loading...</div>;
@@ -45,6 +60,30 @@ export function PaymentsPage() {
         <Button onClick={() => refetch()}>Try again</Button>
       </div>
     );
+  }
+
+  function canChange(currentStatus: PaymentStatus, newStatus: PaymentStatus) {
+    const validTransitions: Record<PaymentStatus, PaymentStatus[]> = {
+      CREATED: ["PROCESSING", "CANCELED"],
+      PROCESSING: ["APPROVED", "DECLINED"],
+      APPROVED: ["CANCELED"],
+      DECLINED: [],
+      CANCELED: [],
+    };
+    const allowed = validTransitions[currentStatus];
+    return allowed.includes(newStatus);
+  }
+
+  function handleChangeStatus(id: string, status: PaymentStatus) {
+    const requests: Record<PaymentStatus, () => void> = {
+      CREATED: () => {},
+      PROCESSING: () => proccessRequest(id),
+      APPROVED: () => approveRequest(id),
+      DECLINED: () => declineRequest(id),
+      CANCELED: () => cancelRequest(id),
+    };
+
+    requests[status]();
   }
 
   return (
@@ -113,19 +152,39 @@ export function PaymentsPage() {
                         Details
                       </DropdownMenuItem>
                     </PaymentDetailsDialog>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem
+                      disabled={
+                        !canChange(item.status, "PROCESSING") || isProcessing
+                      }
+                      onClick={() => handleChangeStatus(item.id, "PROCESSING")}
+                    >
                       <ArrowClockwiseIcon size={32} />
                       Process
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem
+                      disabled={
+                        !canChange(item.status, "APPROVED") || isApproving
+                      }
+                      onClick={() => handleChangeStatus(item.id, "APPROVED")}
+                    >
                       <CheckIcon size={32} />
                       Approve
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem
+                      disabled={
+                        !canChange(item.status, "DECLINED") || isDeclining
+                      }
+                      onClick={() => handleChangeStatus(item.id, "DECLINED")}
+                    >
                       <ProhibitIcon size={32} />
                       Decline
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem
+                      disabled={
+                        !canChange(item.status, "CANCELED") || isCanceling
+                      }
+                      onClick={() => handleChangeStatus(item.id, "CANCELED")}
+                    >
                       <XIcon size={32} />
                       Cancel
                     </DropdownMenuItem>

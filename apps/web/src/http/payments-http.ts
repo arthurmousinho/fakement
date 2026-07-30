@@ -1,5 +1,7 @@
-import { api } from "@/lib/ky";
-import { useQuery } from "@tanstack/react-query";
+import { api, apiErrorHandler } from "@/lib/ky";
+import { queryClient } from "@/lib/query-client";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export type PaymentCurrency = "BRL" | "USD" | "EUR";
 export type PaymentMethod = "CARD" | "PIX" | "BANK_SLIP";
@@ -27,5 +29,61 @@ export function FindAllPaymentsRequest() {
       const request = await api.get("payments");
       return await request.json<Payment[]>();
     },
+  });
+}
+
+export function ApprovePaymentRequest() {
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const request = await api.patch(`payments/${id}/approve`);
+      return await request.json<Payment>();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["payments"] });
+      toast.success("Payment approved successfully.");
+    },
+    onError: apiErrorHandler,
+  });
+}
+
+export function DeclinePaymentRequest() {
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const request = await api.patch(`payments/${id}/decline`);
+      return await request.json<Payment>();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["payments"] });
+      toast.success("Payment declined successfully.");
+    },
+    onError: apiErrorHandler,
+  });
+}
+
+export function CancelPaymentRequest() {
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const request = await api.patch(`payments/${id}/cancel`);
+      return await request.json<Payment>();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["payments"] });
+      toast.success("Payment canceled successfully.");
+    },
+    onError: apiErrorHandler,
+  });
+}
+
+export function ProcessPaymentRequest() {
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const request = await api.patch(`payments/${id}/process`);
+      return await request.json<Payment>();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["payments"] });
+      toast.success("Payment marked as processing.");
+    },
+    onError: apiErrorHandler,
   });
 }
