@@ -18,6 +18,14 @@ async function save(input: {
   return event;
 }
 
+async function findAll() {
+  return await prismaSingleton.paymentEvent.findMany({
+    orderBy: { createdAt: "desc" },
+    omit: { payload: true },
+  });
+}
+
 export const paymentEventService = {
   save,
+  findAll,
 };
