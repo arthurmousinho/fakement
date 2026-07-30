@@ -70,3 +70,21 @@ export function RevokeApiKeyRequest() {
     onError: apiErrorHandler,
   });
 }
+
+type RotateApiKeyResponse = {
+  rawKey: string;
+};
+
+export function RotateApiKeyRequest() {
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const request = await api.patch(`api-keys/${id}/rotate`);
+      return await request.json<RotateApiKeyResponse>();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["api-keys"] });
+      toast.success("API key rotated successfully.");
+    },
+    onError: apiErrorHandler,
+  });
+}

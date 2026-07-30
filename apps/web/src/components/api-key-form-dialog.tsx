@@ -23,7 +23,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState, type ReactNode } from "react";
 import { CreateApiKeyRequest } from "@/http/api-keys-http";
-import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
+import { RevealedApiKeyDialog } from "@/components/revealed-api-key-dialog";
 
 const apiKeySchema = z.object({
   name: z
@@ -42,7 +42,6 @@ type ApiKeyFormDialogProps = {
 export function ApiKeyFormDialog({ children }: ApiKeyFormDialogProps) {
   const [open, setOpen] = useState(false);
   const [rawKey, setRawKey] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
 
   const { mutate: createRequest, isPending: isCreating } =
     CreateApiKeyRequest();
@@ -61,20 +60,12 @@ export function ApiKeyFormDialog({ children }: ApiKeyFormDialogProps) {
     });
   }
 
-  function handleCopy() {
-    if (!rawKey) return;
-    navigator.clipboard.writeText(rawKey);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }
-
   function handleOpenChange(nextOpen: boolean) {
     setOpen(nextOpen);
     if (!nextOpen) {
       setTimeout(() => {
         form.reset();
         setRawKey(null);
-        setCopied(false);
       }, 200);
     }
   }
@@ -86,37 +77,12 @@ export function ApiKeyFormDialog({ children }: ApiKeyFormDialogProps) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-sm">
         {rawKey ? (
-          <>
-            <DialogHeader>
-              <DialogTitle>API key criada</DialogTitle>
-              <DialogDescription>
-                Copie sua chave agora. Por segurança, ela não será exibida
-                novamente.
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="flex items-center gap-2">
-              <Input readOnly value={rawKey} className="font-mono text-sm" />
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                onClick={handleCopy}
-              >
-                {copied ? (
-                  <CheckIcon size={16} className="text-green-600" />
-                ) : (
-                  <CopyIcon size={16} />
-                )}
-              </Button>
-            </div>
-
-            <DialogFooter>
-              <Button type="button" onClick={() => handleOpenChange(false)}>
-                Concluído
-              </Button>
-            </DialogFooter>
-          </>
+          <RevealedApiKeyDialog
+            title="API key criada"
+            description="Copie sua chave agora. Por segurança, ela não será exibida novamente."
+            value={rawKey}
+            onDone={() => handleOpenChange(false)}
+          />
         ) : (
           <>
             <DialogHeader>

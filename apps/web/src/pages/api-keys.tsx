@@ -1,6 +1,8 @@
 import { ApiKeyFormDialog } from "@/components/api-key-form-dialog";
+import { RevealedApiKeyDialog } from "@/components/revealed-api-key-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,21 +22,28 @@ import {
   DeleteApiKeyRequest,
   FindAllApiKeysRequest,
   RevokeApiKeyRequest,
+  RotateApiKeyRequest,
 } from "@/http/api-keys-http";
 import {
+  ArrowClockwiseIcon,
   ProhibitIcon,
   DotsThreeIcon,
   KeyIcon,
   PlusIcon,
   TrashIcon,
 } from "@phosphor-icons/react";
+import { useState } from "react";
 
 export function ApiKeysPage() {
+  const [rotatedKey, setRotatedKey] = useState<string | null>(null);
+
   const { data, isPending, isError, refetch } = FindAllApiKeysRequest();
   const { mutate: deleteRequest, isPending: isDeleting } =
     DeleteApiKeyRequest();
   const { mutate: revokeRequest, isPending: isRevoking } =
     RevokeApiKeyRequest();
+  const { mutate: rotateRequest, isPending: isRotating } =
+    RotateApiKeyRequest();
 
   if (isPending) {
     return <div>Loading...</div>;
@@ -60,6 +69,15 @@ export function ApiKeysPage() {
   function handleRevoke(id: string) {
     if (isRevoking) return;
     revokeRequest(id);
+  }
+
+  function handleRotate(id: string) {
+    if (isRotating) return;
+    rotateRequest(id, {
+      onSuccess: (response) => {
+        setRotatedKey(response.rawKey);
+      },
+    });
   }
 
   return (
@@ -122,6 +140,13 @@ export function ApiKeysPage() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent side="right">
                     <DropdownMenuItem
+                      onClick={() => handleRotate(item.id)}
+                      disabled={Boolean(item.revokedAt) || isRotating}
+                    >
+                      <ArrowClockwiseIcon size={32} />
+                      Rotate
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
                       onClick={() => handleRevoke(item.id)}
                       disabled={Boolean(item.revokedAt) || isRevoking}
                     >
@@ -154,6 +179,22 @@ export function ApiKeysPage() {
           )}
         </TableBody>
       </Table>
+
+      <Dialog
+        open={Boolean(rotatedKey)}
+        onOpenChange={(open) => !open && setRotatedKey(null)}
+      >
+        <DialogContent className="sm:max-w-sm">
+          {rotatedKey && (
+            <RevealedApiKeyDialog
+              title="API key rotacionada"
+              description="Copie sua nova chave agora. Por segurança, ela não será exibida novamente."
+              value={rotatedKey}
+              onDone={() => setRotatedKey(null)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
