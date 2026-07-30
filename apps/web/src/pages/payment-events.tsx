@@ -9,16 +9,27 @@ import {
 import { formatDateTime } from "@/lib/formatters";
 import { ReceiptIcon } from "@phosphor-icons/react";
 import { PaymentEventType } from "@/components/payment-event-type";
+import { FindAllPaymentEventsRequest } from "@/http/payment-events-http";
+import { Button } from "@/components/ui/button";
 
 export function PaymentEventsPage() {
-  const data = [
-    {
-      id: "060d6066-4be0-4a08-9dda-881d628b4b74",
-      paymentId: "96a1df76-8245-47ae-9b43-19343a84f0cc",
-      type: "PAYMENT_CANCELED",
-      createdAt: "2026-07-30T17:54:29.409Z",
-    },
-  ];
+  const { data, isPending, isError, refetch } = FindAllPaymentEventsRequest();
+
+  if (isPending) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center gap-4 py-10">
+        <p className="text-sm text-muted-foreground">
+          Failed to load Payment Events.
+        </p>
+
+        <Button onClick={() => refetch()}>Try again</Button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -51,7 +62,7 @@ export function PaymentEventsPage() {
               <TableCell>{item.id}</TableCell>
               <TableCell className="text-right">{item.paymentId}</TableCell>
               <TableCell className="text-right font-mono font-medium">
-                <PaymentEventType type="PAYMENT_APPROVED" />
+                <PaymentEventType type={item.type} />
               </TableCell>
               <TableCell className="text-right">
                 {formatDateTime(item.createdAt)}

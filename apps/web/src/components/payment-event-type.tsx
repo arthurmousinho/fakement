@@ -1,11 +1,5 @@
 import { cn } from "@/lib/utils";
-
-type PaymentEventType =
-  | "PAYMENT_CREATED"
-  | "PAYMENT_PROCESSING"
-  | "PAYMENT_APPROVED"
-  | "PAYMENT_DECLINED"
-  | "PAYMENT_CANCELED";
+import { type PaymentEventType } from "@/http/payment-events-http";
 
 type PaymentEventTypeProps = {
   type: PaymentEventType;
@@ -36,5 +30,7 @@ const PAYMENT_EVENT_TYPE_CONFIG: Record<
 export function PaymentEventType({ type, className }: PaymentEventTypeProps) {
   const { className: typeClassName } = PAYMENT_EVENT_TYPE_CONFIG[type];
 
-  return <span className={cn("gap-1", typeClassName, className)}>{type}</span>;
+  return (
+    <span className={cn("font-medium", typeClassName, className)}>{type}</span>
+  );
 }
