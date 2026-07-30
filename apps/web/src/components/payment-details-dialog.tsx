@@ -15,26 +15,12 @@ import { formatCurrencyFromCents } from "@/lib/formatters";
 import { formatDateTime } from "@/lib/formatters";
 import type { Payment } from "@/http/payments-http";
 import { CopyableField } from "./ui/copyable-field";
+import { DetailRow } from "./ui/detail-row";
 
 type PaymentDetailsDialogProps = {
   payment: Payment;
   children: ReactNode;
 };
-
-function DetailRow({
-  label,
-  children,
-}: {
-  label: string;
-  children: ReactNode;
-}) {
-  return (
-    <div className="flex items-center justify-between gap-4">
-      <span className="text-sm text-muted-foreground">{label}</span>
-      <div className="text-sm font-medium">{children}</div>
-    </div>
-  );
-}
 
 export function PaymentDetailsDialog({
   payment,

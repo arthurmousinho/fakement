@@ -7,10 +7,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatDateTime } from "@/lib/formatters";
-import { ReceiptIcon } from "@phosphor-icons/react";
+import { DotsThreeIcon, EyeIcon, ReceiptIcon } from "@phosphor-icons/react";
 import { PaymentEventType } from "@/components/payment-event-type";
 import { FindAllPaymentEventsRequest } from "@/http/payment-events-http";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { PaymentEventDetailsDialog } from "@/components/payment-event-details-dialog";
 
 export function PaymentEventsPage() {
   const { data, isPending, isError, refetch } = FindAllPaymentEventsRequest();
@@ -53,6 +60,7 @@ export function PaymentEventsPage() {
             <TableHead className="text-right">Payment ID</TableHead>
             <TableHead className="text-right">Type</TableHead>
             <TableHead className="text-right">Created At</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -66,6 +74,25 @@ export function PaymentEventsPage() {
               </TableCell>
               <TableCell className="text-right">
                 {formatDateTime(item.createdAt)}
+              </TableCell>
+              <TableCell className="text-right">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button size="icon" variant="ghost">
+                      <DotsThreeIcon size={32} />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <PaymentEventDetailsDialog event={item}>
+                      <DropdownMenuItem
+                        onSelect={(event) => event.preventDefault()}
+                      >
+                        <EyeIcon size={32} />
+                        Details
+                      </DropdownMenuItem>
+                    </PaymentEventDetailsDialog>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </TableCell>
             </TableRow>
           ))}

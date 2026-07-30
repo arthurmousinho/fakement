@@ -1,5 +1,6 @@
 import { api } from "@/lib/ky";
 import { useQuery } from "@tanstack/react-query";
+import type { Payment } from "./payments-http";
 
 export type PaymentEventType =
   | "PAYMENT_CREATED"
@@ -13,6 +14,7 @@ export type PaymentEvent = {
   paymentId: string;
   type: PaymentEventType;
   createdAt: string;
+  payload: Payment;
 };
 
 export function FindAllPaymentEventsRequest() {

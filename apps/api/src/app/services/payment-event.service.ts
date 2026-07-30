@@ -21,7 +21,6 @@ async function save(input: {
 async function findAll() {
   return await prismaSingleton.paymentEvent.findMany({
     orderBy: { createdAt: "desc" },
-    omit: { payload: true },
   });
 }
 
