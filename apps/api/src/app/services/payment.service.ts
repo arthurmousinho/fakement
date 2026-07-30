@@ -10,6 +10,7 @@ import {
 import { prismaSingleton } from "../../config/prisma.ts";
 import type { CreatePaymentInput } from "../schemas/payment.schema.ts";
 import { apiKeyService } from "./api-key.service.ts";
+import { paymentEventService } from "./payment-event.service.ts";
 import { webhookService } from "./webhook.service.ts";
 
 async function create(apiKey: string, input: CreatePaymentInput) {
@@ -59,7 +60,7 @@ async function create(apiKey: string, input: CreatePaymentInput) {
       status: "CREATED",
     },
   });
-  await saveEvent({
+  await paymentEventService.save({
     paymentId: payment.id,
     type: "PAYMENT_CREATED",
     payload: payment,
@@ -115,31 +116,13 @@ async function changeStatus(id: string, newStatus: PaymentStatus) {
     data: { status: newStatus },
   });
 
-  await saveEvent({
+  await paymentEventService.save({
     paymentId: payment.id,
     type: `PAYMENT_${newStatus}`,
     payload: payment,
   });
 
   return updatedPayment;
-}
-
-async function saveEvent(input: {
-  type: PaymentEventType;
-  paymentId: string;
-  payload?: unknown;
-}) {
-  const event = await prismaSingleton.paymentEvent.create({
-    data: {
-      type: input.type,
-      paymentId: input.paymentId,
-      payload: input.payload ?? {},
-    },
-  });
-
-  await webhookService.dispatch(event);
-
-  return event;
 }
 
 export const paymentService = {
