@@ -20,6 +20,12 @@ export async function apiKeyRoutes(app: FastifyInstance) {
     return reply.status(204).send();
   });
 
+  app.patch("/:id/rotate", async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const apiKey = await apiKeyService.rotate(id);
+    return reply.status(200).send(apiKey);
+  });
+
   app.delete("/:id", async (request, reply) => {
     const { id } = request.params as { id: string };
     await apiKeyService.remove(id);

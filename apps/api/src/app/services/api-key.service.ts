@@ -7,9 +7,14 @@ import {
   UnauthorizedError,
 } from "../../common/http-error.ts";
 
-async function create(input: CreateApiKeyInput) {
+function generateKeyPair() {
   const rawKey = crypto.randomBytes(32).toString("hex");
   const keyHash = crypto.createHash("sha256").update(rawKey).digest("hex");
+  return { rawKey, keyHash };
+}
+
+async function create(input: CreateApiKeyInput) {
+  const { rawKey, keyHash } = generateKeyPair();
 
   const createdApiKey = await prismaSingleton.apiKey.create({
     data: {
@@ -32,12 +37,18 @@ async function findAll() {
   return apiKeys;
 }
 
-async function revoke(id: string) {
+async function findById(id: string) {
   const apiKey = await prismaSingleton.apiKey.findUnique({ where: { id } });
 
   if (!apiKey) {
     throw new NotFoundError(`Api Key with ID ${id} was not found.`);
   }
+
+  return apiKey;
+}
+
+async function revoke(id: string) {
+  const apiKey = await findById(id);
 
   if (apiKey.revokedAt) {
     throw new ConflictError(`Api Key with ID ${id} was already revoked.`);
@@ -50,15 +61,27 @@ async function revoke(id: string) {
 }
 
 async function remove(id: string) {
-  const apiKey = await prismaSingleton.apiKey.findUnique({ where: { id } });
-
-  if (!apiKey) {
-    throw new NotFoundError(`Api Key with ID ${id} was not found.`);
-  }
-
+  const apiKey = await findById(id);
   await prismaSingleton.apiKey.delete({
     where: { id: apiKey.id },
   });
+}
+
+async function rotate(id: string) {
+  const apiKey = await findById(id);
+
+  if (apiKey.revokedAt) {
+    throw new ConflictError(`Api Key with ID ${id} is revoked.`);
+  }
+
+  const { rawKey, keyHash } = generateKeyPair();
+
+  await prismaSingleton.apiKey.update({
+    where: { id: apiKey.id },
+    data: { keyHash },
+  });
+
+  return { rawKey };
 }
 
 async function validate(rawKey: string) {
@@ -85,4 +108,5 @@ export const apiKeyService = {
   revoke,
   remove,
   validate,
+  rotate,
 };
