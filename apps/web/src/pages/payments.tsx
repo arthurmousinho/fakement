@@ -1,4 +1,5 @@
 import { PaymentCurrencyBadge } from "@/components/payment-currency-badge";
+import { PaymentDetailsDialog } from "@/components/payment-details-dialog";
 import { PaymentMethodBadge } from "@/components/payment-method-badge";
 import { PaymentStatusBadge } from "@/components/payment-status-badge";
 import { Button } from "@/components/ui/button";
@@ -104,10 +105,14 @@ export function PaymentsPage() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent side="right">
-                    <DropdownMenuItem>
-                      <EyeIcon size={32} />
-                      Details
-                    </DropdownMenuItem>
+                    <PaymentDetailsDialog payment={item}>
+                      <DropdownMenuItem
+                        onSelect={(event) => event.preventDefault()}
+                      >
+                        <EyeIcon size={32} />
+                        Details
+                      </DropdownMenuItem>
+                    </PaymentDetailsDialog>
                     <DropdownMenuItem>
                       <ArrowClockwiseIcon size={32} />
                       Process
