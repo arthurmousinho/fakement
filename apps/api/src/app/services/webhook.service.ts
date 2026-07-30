@@ -35,6 +35,7 @@ async function createEndpoint(
 async function findAllEndpoints() {
   return await prismaSingleton.webhookEndpoint.findMany({
     omit: { secret: true },
+    orderBy: { createdAt: "desc" },
   });
 }
 

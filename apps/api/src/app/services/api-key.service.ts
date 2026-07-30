@@ -33,6 +33,7 @@ async function create(input: CreateApiKeyInput) {
 async function findAll() {
   const apiKeys = await prismaSingleton.apiKey.findMany({
     omit: { keyHash: true },
+    orderBy: { createdAt: "desc" },
   });
   return apiKeys;
 }

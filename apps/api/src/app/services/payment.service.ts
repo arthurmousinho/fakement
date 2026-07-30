@@ -69,7 +69,9 @@ async function create(apiKey: string, input: CreatePaymentInput) {
 }
 
 async function findAll() {
-  const payments = await prismaSingleton.payment.findMany();
+  const payments = await prismaSingleton.payment.findMany({
+    orderBy: { createdAt: "desc" },
+  });
   return payments;
 }
 
