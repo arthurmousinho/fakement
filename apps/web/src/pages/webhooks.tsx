@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/table";
 import { WebhookEndpointFormDialog } from "@/components/webhook-endpoint-form-dialog";
 import {
+  DeleteWebhookEndpointRequest,
   FindAllWebhookEndpointsRequest,
   RotateWebhookEndpointRequest,
 } from "@/http/webhooks-http";
@@ -45,6 +46,8 @@ export function WebhooksPage() {
     FindAllWebhookEndpointsRequest();
   const { mutate: rotateRequest, isPending: isRotating } =
     RotateWebhookEndpointRequest();
+  const { mutate: deleteRequest, isPending: isDeleting } =
+    DeleteWebhookEndpointRequest();
 
   if (isPending) {
     return <div>Loading...</div>;
@@ -68,6 +71,11 @@ export function WebhooksPage() {
         setRotatedSecret(response.secret);
       },
     });
+  }
+
+  function handleDelete(id: string) {
+    if (isDeleting) return;
+    deleteRequest(id);
   }
 
   return (
@@ -153,10 +161,12 @@ export function WebhooksPage() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent side="right">
-                    <DropdownMenuItem>
-                      <PencilIcon size={32} />
-                      Edit
-                    </DropdownMenuItem>
+                    <WebhookEndpointFormDialog webhookEndpoint={item}>
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <PencilIcon size={32} />
+                        Edit
+                      </DropdownMenuItem>
+                    </WebhookEndpointFormDialog>
                     <DropdownMenuItem
                       onClick={() => handleRotate(item.id)}
                       disabled={isRotating}
@@ -164,7 +174,11 @@ export function WebhooksPage() {
                       <ArrowClockwiseIcon size={32} />
                       Rotate Secret
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="text-destructive">
+                    <DropdownMenuItem
+                      className="text-destructive"
+                      onClick={() => handleDelete(item.id)}
+                      disabled={isDeleting}
+                    >
                       <TrashIcon size={32} />
                       Delete
                     </DropdownMenuItem>

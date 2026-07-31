@@ -72,7 +72,40 @@ export function RotateWebhookEndpointRequest() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["webhooks", "endpoints"] });
-      toast.success("Webhook endpoint revoked successfully.");
+      toast.success("Webhook endpoint secret rotated successfully.");
+    },
+    onError: apiErrorHandler,
+  });
+}
+
+export function DeleteWebhookEndpointRequest() {
+  return useMutation({
+    mutationFn: async (id: string) => {
+      await api.delete(`webhooks/endpoints/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["webhooks", "endpoints"] });
+      toast.success("Webhook endpoint deleted successfully.");
+    },
+    onError: apiErrorHandler,
+  });
+}
+
+export type eUpdateWebhookEndpointRequestData = {
+  id: string;
+  url: string;
+  events: string[];
+};
+
+export function UpdateWebhookEndpointRequest() {
+  return useMutation({
+    mutationFn: async (data: eUpdateWebhookEndpointRequestData) => {
+      const body = { url: data.url, events: data.events };
+      await api.patch(`webhooks/endpoints/${data.id}`, { json: body });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["webhooks", "endpoints"] });
+      toast.success("Webhook endpoint updated successfully.");
     },
     onError: apiErrorHandler,
   });

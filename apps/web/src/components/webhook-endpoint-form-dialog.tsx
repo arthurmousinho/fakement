@@ -19,71 +19,105 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState, type ReactNode } from "react";
-import { CreateWebhookEndpointRequest } from "@/http/webhooks-http";
+import {
+  CreateWebhookEndpointRequest,
+  UpdateWebhookEndpointRequest,
+} from "@/http/webhooks-http";
 import { RevealedSecretDialog } from "@/components/revealed-secret-dialog";
+import type { PaymentEventType as PaymentEventTypeAlias } from "@/http/payment-events-http";
+import { PaymentEventType } from "./payment-event-type";
 
-const PAYMENT_EVENT_TYPES = [
-  { value: "PAYMENT_CREATED", label: "Payment created" },
-  { value: "PAYMENT_PROCESSING", label: "Payment processing" },
-  { value: "PAYMENT_APPROVED", label: "Payment approved" },
-  { value: "PAYMENT_DECLINED", label: "Payment declined" },
-  { value: "PAYMENT_CANCELED", label: "Payment canceled" },
+const PAYMENT_EVENT_TYPES: PaymentEventTypeAlias[] = [
+  "PAYMENT_CREATED",
+  "PAYMENT_PROCESSING",
+  "PAYMENT_APPROVED",
+  "PAYMENT_DECLINED",
+  "PAYMENT_CANCELED",
 ] as const;
 
-const webhookEndpointSchema = z.object({
-  url: z
-    .string({ message: "A URL deve ser um texto" })
-    .trim()
-    .url("Informe uma URL válida."),
-  events: z
-    .array(
-      z.enum([
-        "PAYMENT_CREATED",
-        "PAYMENT_PROCESSING",
-        "PAYMENT_APPROVED",
-        "PAYMENT_DECLINED",
-        "PAYMENT_CANCELED",
-      ]),
-    )
-    .min(1, "Selecione ao menos um evento."),
-  apiKey: z
-    .string({ message: "A API key deve ser um texto" })
-    .trim()
-    .min(1, "Informe a API key."),
-});
+function buildSchema(isEditing: boolean) {
+  return z.object({
+    url: z
+      .string({ message: "A URL deve ser um texto" })
+      .trim()
+      .url("Informe uma URL válida."),
+    events: z
+      .array(z.enum(PAYMENT_EVENT_TYPES))
+      .min(1, "Selecione ao menos um evento."),
+    apiKey: isEditing
+      ? z.string().trim().optional()
+      : z
+          .string({ message: "A API key deve ser um texto" })
+          .trim()
+          .min(1, "Informe a API key."),
+  });
+}
 
-type WebhookEndpointFormData = z.infer<typeof webhookEndpointSchema>;
+type WebhookEndpointFormData = z.infer<ReturnType<typeof buildSchema>>;
+
+type WebhookEndpointToEdit = {
+  id: string;
+  url: string;
+  events: PaymentEventTypeAlias[];
+};
 
 type WebhookEndpointFormDialogProps = {
   children: ReactNode;
+  webhookEndpoint?: WebhookEndpointToEdit;
 };
 
 export function WebhookEndpointFormDialog({
   children,
+  webhookEndpoint,
 }: WebhookEndpointFormDialogProps) {
+  const isEditing = Boolean(webhookEndpoint);
+
   const [open, setOpen] = useState(false);
   const [secret, setSecret] = useState<string | null>(null);
 
   const { mutate: createRequest, isPending: isCreating } =
     CreateWebhookEndpointRequest();
+  const { mutate: updateRequest, isPending: isUpdating } =
+    UpdateWebhookEndpointRequest();
+
+  const isSubmitting = isCreating || isUpdating;
 
   const form = useForm<WebhookEndpointFormData>({
-    resolver: zodResolver(webhookEndpointSchema),
-    defaultValues: { url: "", events: [], apiKey: "" },
+    resolver: zodResolver(buildSchema(isEditing)),
+    defaultValues: {
+      url: webhookEndpoint?.url ?? "",
+      events: webhookEndpoint?.events ?? [],
+      apiKey: "",
+    },
   });
 
   function onSubmit(data: WebhookEndpointFormData) {
-    if (isCreating) return;
-    createRequest(data, {
-      onSuccess: (response) => {
-        setSecret(response.secret);
+    if (isSubmitting) return;
+
+    if (isEditing && webhookEndpoint) {
+      updateRequest(
+        { id: webhookEndpoint.id, url: data.url, events: data.events },
+        {
+          onSuccess: () => {
+            handleOpenChange(false);
+          },
+        },
+      );
+      return;
+    }
+
+    createRequest(
+      { url: data.url, events: data.events, apiKey: data.apiKey! },
+      {
+        onSuccess: (response) => {
+          setSecret(response.secret);
+        },
       },
-    });
+    );
   }
 
   function handleOpenChange(nextOpen: boolean) {
@@ -104,23 +138,27 @@ export function WebhookEndpointFormDialog({
       <DialogContent className="sm:max-w-sm">
         {secret ? (
           <RevealedSecretDialog
-            title="Webhook criado"
-            description="Copie o secret agora. Por segurança, ele não será exibido novamente."
+            title="Webhook created"
+            description="Copy the secret now. It will not be shown again."
             value={secret}
             onDone={() => handleOpenChange(false)}
           />
         ) : (
           <>
             <DialogHeader>
-              <DialogTitle>New Webhook</DialogTitle>
+              <DialogTitle>
+                {isEditing ? "Edit Webhook" : "New Webhook"}
+              </DialogTitle>
               <DialogDescription>
-                Fill out the form below to create a new webhook endpoint.
+                {isEditing
+                  ? "Update the URL and events for this webhook endpoint."
+                  : "Fill out the form below to create a new webhook endpoint."}
               </DialogDescription>
             </DialogHeader>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-6"
+                className="space-y-4"
               >
                 <FormField
                   control={form.control}
@@ -138,40 +176,35 @@ export function WebhookEndpointFormDialog({
                     </FormItem>
                   )}
                 />
-
-                <FormField
-                  control={form.control}
-                  name="apiKey"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>API Key</FormLabel>
-                      <FormControl>
-                        <Input placeholder="sk_live_..." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
+                {!isEditing && (
+                  <FormField
+                    control={form.control}
+                    name="apiKey"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>API Key</FormLabel>
+                        <FormControl>
+                          <Input placeholder="sk_live_..." {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
                 <FormField
                   control={form.control}
                   name="events"
                   render={() => (
                     <FormItem>
                       <FormLabel>Events</FormLabel>
-                      <FormDescription>
-                        Select which events should trigger this webhook.
-                      </FormDescription>
                       <div className="space-y-2">
-                        {PAYMENT_EVENT_TYPES.map((event) => (
+                        {PAYMENT_EVENT_TYPES.map((type, index) => (
                           <FormField
-                            key={event.value}
+                            key={index}
                             control={form.control}
                             name="events"
                             render={({ field }) => {
-                              const checked = field.value?.includes(
-                                event.value,
-                              );
+                              const checked = field.value?.includes(type);
                               return (
                                 <FormItem className="flex flex-row items-center gap-2">
                                   <FormControl>
@@ -181,21 +214,19 @@ export function WebhookEndpointFormDialog({
                                         if (isChecked) {
                                           field.onChange([
                                             ...field.value,
-                                            event.value,
+                                            type,
                                           ]);
                                         } else {
                                           field.onChange(
                                             field.value.filter(
-                                              (value) => value !== event.value,
+                                              (value) => value !== type,
                                             ),
                                           );
                                         }
                                       }}
                                     />
                                   </FormControl>
-                                  <FormLabel className="font-normal">
-                                    {event.label}
-                                  </FormLabel>
+                                  <PaymentEventType type={type} />
                                 </FormItem>
                               );
                             }}
@@ -206,14 +237,13 @@ export function WebhookEndpointFormDialog({
                     </FormItem>
                   )}
                 />
-
                 <DialogFooter>
                   <DialogClose asChild>
                     <Button type="button" variant="outline">
-                      Cancelar
+                      Cancel
                     </Button>
                   </DialogClose>
-                  <Button type="submit" disabled={isCreating}>
+                  <Button type="submit" disabled={isSubmitting}>
                     Save
                   </Button>
                 </DialogFooter>
