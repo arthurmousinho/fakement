@@ -20,6 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { WebhookEndpointFormDialog } from "@/components/webhook-endpoint-form-dialog";
 import { FindAllWebhookEndpointsRequest } from "@/http/webhooks-http";
 import { formatDateTime } from "@/lib/formatters";
 import {
@@ -65,10 +66,12 @@ export function WebhooksPage() {
           </p>
         </div>
 
-        <Button>
-          <PlusIcon size={18} />
-          New Webhook
-        </Button>
+        <WebhookEndpointFormDialog>
+          <Button>
+            <PlusIcon size={18} />
+            New Webhook
+          </Button>
+        </WebhookEndpointFormDialog>
       </header>
 
       <Table>
