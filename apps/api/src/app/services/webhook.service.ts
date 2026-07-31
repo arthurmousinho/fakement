@@ -78,13 +78,14 @@ async function deleteEndpoint(endpointId: string) {
   });
 }
 
-async function revokeEndpointSecret(endpointId: string) {
+async function rotateEndpointSecret(endpointId: string) {
   const endpoint = await findEndpointById(endpointId);
-  const newSecret = generateSecret();
-  return await prismaSingleton.webhookEndpoint.update({
+  const secret = generateSecret();
+  await prismaSingleton.webhookEndpoint.update({
     where: { id: endpoint.id },
-    data: { secret: newSecret },
+    data: { secret },
   });
+  return { secret };
 }
 
 async function findEnabledEndpointsByApiKeyId(apiKeyId: string) {
@@ -163,6 +164,6 @@ export const webhookService = {
   findEndpointById,
   updateEndpoint,
   deleteEndpoint,
-  revokeEndpointSecret,
+  rotateEndpointSecret,
   dispatch,
 };

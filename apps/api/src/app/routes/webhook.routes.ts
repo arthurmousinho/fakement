@@ -44,10 +44,10 @@ export async function webhookRoutes(app: FastifyInstance) {
     return reply.status(200).send(updatedEndpoint);
   });
 
-  app.patch("/endpoints/:id/secret/revoke", async (request, reply) => {
+  app.patch("/endpoints/:id/secret/rotate", async (request, reply) => {
     const { id } = request.params as { id: string };
-    const updatedEndpoint = await webhookService.revokeEndpointSecret(id);
-    return reply.status(200).send(updatedEndpoint);
+    const updatedEndpoint = await webhookService.rotateEndpointSecret(id);
+    return reply.status(201).send(updatedEndpoint);
   });
 
   app.delete("/endpoints/:id", async (request, reply) => {
