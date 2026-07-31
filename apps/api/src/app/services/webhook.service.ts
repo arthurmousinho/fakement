@@ -62,7 +62,6 @@ async function updateEndpoint(
     where: { id: endpoint.id },
     data: {
       ...(input.url !== undefined && { url: input.url }),
-      ...(input.enabled !== undefined && { enabled: input.enabled }),
       ...(input.events !== undefined && {
         events: input.events,
       }),

@@ -31,11 +31,6 @@ export const updateWebhookEndpointSchema = z.object({
     .url("A URL informada é inválida.")
     .max(2048, "A URL deve possuir no máximo 2048 caracteres.")
     .optional(),
-  enabled: z
-    .boolean({
-      message: "O campo enabled deve ter um valor booleano.",
-    })
-    .optional(),
   events: paymentEventsSchema.optional(),
 });
 
