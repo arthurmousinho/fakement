@@ -1,5 +1,5 @@
 import { prismaSingleton } from "../../config/prisma.ts";
-import { webhookService } from "./webhook.service.ts";
+import { webhookDeliveryService } from "./webhook-delivery.service.ts";
 import type { PaymentEventType } from "../../../generated/prisma/client.ts";
 
 async function save(input: {
@@ -14,7 +14,7 @@ async function save(input: {
       payload: input.payload ?? {},
     },
   });
-  await webhookService.dispatch(event);
+  await webhookDeliveryService.dispatch(event);
   return event;
 }
 
