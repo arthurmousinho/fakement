@@ -7,6 +7,10 @@ import type {
 } from "../../../generated/prisma/client.ts";
 import { webhookEndpointService } from "./webhook-endpoint.service.ts";
 
+async function findAll() {
+  return await prismaSingleton.webhookDelivery.findMany();
+}
+
 async function send(endpoint: WebhookEndpoint, paymentEvent: PaymentEvent) {
   const delivery = await prismaSingleton.webhookDelivery.create({
     data: {
@@ -74,4 +78,5 @@ async function dispatch(paymentEvent: PaymentEvent) {
 export const webhookDeliveryService = {
   send,
   dispatch,
+  findAll,
 };

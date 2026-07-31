@@ -7,6 +7,7 @@ import { HttpError } from "./common/http-error.ts";
 import { paymentRoutes } from "./app/routes/payment.routes.ts";
 import { webhookEndpointRoutes } from "./app/routes/webhook-endpoint.routes.ts";
 import { paymentEventRoutes } from "./app/routes/payment-event.routes.ts";
+import { webhookDeliveryRoutes } from "./app/routes/webhook-delivery.routes.ts";
 
 export const appSingleton = createApp();
 
@@ -55,6 +56,9 @@ appSingleton.post("/webhooks/mock/handler", async (request, reply) => {
 appSingleton.register(apiKeyRoutes, { prefix: "/api-keys" });
 appSingleton.register(paymentRoutes, { prefix: "/payments" });
 appSingleton.register(webhookEndpointRoutes, { prefix: "/webhooks/endpoints" });
+appSingleton.register(webhookDeliveryRoutes, {
+  prefix: "/webhooks/deliveries",
+});
 appSingleton.register(paymentEventRoutes, { prefix: "/events" });
 
 try {
