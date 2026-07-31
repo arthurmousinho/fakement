@@ -105,7 +105,6 @@ model WebhookEndpoint {
 
   url      String
   secret   String
-  enabled  Boolean @default(true)
   events   Json // String[] is not supported by MySQL
   apiKeyId String
 

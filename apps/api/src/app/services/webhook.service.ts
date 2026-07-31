@@ -87,9 +87,9 @@ async function rotateEndpointSecret(endpointId: string) {
   return { secret };
 }
 
-async function findEnabledEndpointsByApiKeyId(apiKeyId: string) {
+async function findEndpointsByApiKeyId(apiKeyId: string) {
   return await prismaSingleton.webhookEndpoint.findMany({
-    where: { apiKeyId, enabled: true },
+    where: { apiKeyId },
   });
 }
 
@@ -148,7 +148,7 @@ async function send(endpoint: WebhookEndpoint, paymentEvent: PaymentEvent) {
 
 async function dispatch(paymentEvent: PaymentEvent) {
   const payment = await paymentService.findById(paymentEvent.paymentId);
-  const endpoints = await findEnabledEndpointsByApiKeyId(payment.apiKeyId);
+  const endpoints = await findEndpointsByApiKeyId(payment.apiKeyId);
 
   for (const endpoint of endpoints) {
     const events = endpoint.events as PaymentEventType[];

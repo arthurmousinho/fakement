@@ -109,7 +109,6 @@ export function WebhooksPage() {
             <TableHead className="text-right">Created At</TableHead>
             <TableHead className="text-right">Updated At</TableHead>
             <TableHead className="text-right">Events</TableHead>
-            <TableHead className="text-right">Status</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -147,11 +146,6 @@ export function WebhooksPage() {
                     )}
                   </HoverCardContent>
                 </HoverCard>
-              </TableCell>
-              <TableCell className="text-right">
-                <Badge variant={item.enabled ? "default" : "destructive"}>
-                  {item.enabled ? "Active" : "Disabled"}
-                </Badge>
               </TableCell>
               <TableCell className="text-right">
                 <DropdownMenu>

@@ -7,7 +7,6 @@ import { toast } from "sonner";
 export type WebhookEndpoint = {
   id: string;
   url: string;
-  enabled: boolean;
   events: PaymentEventType[];
   apiKeyId: string;
   createdAt: string;
@@ -34,7 +33,6 @@ export type CreateWebhookEndpointResponseData = {
   id: string;
   url: string;
   secret: string;
-  enabled: boolean;
   events: PaymentEventType[];
   apiKeyId: string;
   createdAt: string;
