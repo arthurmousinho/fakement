@@ -1,4 +1,3 @@
-import { ApiKeyFormDialog } from "@/components/api-key-form-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { FindAllWebhookEndpointsRequest } from "@/http/webhooks-http";
 import { formatDateTime } from "@/lib/formatters";
 import {
   PencilIcon,
@@ -27,17 +27,23 @@ import {
 } from "@phosphor-icons/react";
 
 export function WebhooksPage() {
-  const data = [
-    {
-      id: "b00ce8c0-7807-4fda-b239-31fd005010c9",
-      url: "http://localhost:3000/webhooks/test",
-      enabled: true,
-      events: ["PAYMENT_APPROVED"],
-      apiKeyId: "b974efc1-f241-48d9-bef4-093046ae5830",
-      createdAt: "2026-07-28T13:44:21.096Z",
-      updatedAt: "2026-07-28T13:44:21.096Z",
-    },
-  ];
+  const { data, isPending, isError, refetch } =
+    FindAllWebhookEndpointsRequest();
+
+  if (isPending) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center gap-4 py-10">
+        <p className="text-sm text-muted-foreground">
+          Failed to load Webhooks.
+        </p>
+        <Button onClick={() => refetch()}>Try again</Button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
