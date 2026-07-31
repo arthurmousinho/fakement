@@ -5,7 +5,7 @@ import { apiKeyRoutes } from "./app/routes/api-key.routes.ts";
 import { env } from "./config/env.ts";
 import { HttpError } from "./common/http-error.ts";
 import { paymentRoutes } from "./app/routes/payment.routes.ts";
-import { webhookRoutes } from "./app/routes/webhook.routes.ts";
+import { webhookEndpointRoutes } from "./app/routes/webhook-endpoint.routes.ts";
 import { paymentEventRoutes } from "./app/routes/payment-event.routes.ts";
 
 export const appSingleton = createApp();
@@ -43,10 +43,18 @@ appSingleton.setErrorHandler((error, request, reply) => {
   });
 });
 
+// Mock Webhook Handler
+appSingleton.post("/webhooks/mock/handler", async (request, reply) => {
+  console.log("Webhook received");
+  console.log("Body:", request.body);
+  console.log("Signature:", request.headers["x-signature"]);
+  return reply.status(200).send();
+});
+
 // Routes
 appSingleton.register(apiKeyRoutes, { prefix: "/api-keys" });
 appSingleton.register(paymentRoutes, { prefix: "/payments" });
-appSingleton.register(webhookRoutes, { prefix: "/webhooks" });
+appSingleton.register(webhookEndpointRoutes, { prefix: "/webhooks/endpoints" });
 appSingleton.register(paymentEventRoutes, { prefix: "/events" });
 
 try {

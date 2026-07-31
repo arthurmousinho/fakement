@@ -5,7 +5,7 @@ import type {
   PaymentEventType,
   WebhookEndpoint,
 } from "../../../generated/prisma/client.ts";
-import { webhookService } from "./webhook.service.ts";
+import { webhookEndpointService } from "./webhook-endpoint.service.ts";
 
 async function send(endpoint: WebhookEndpoint, paymentEvent: PaymentEvent) {
   const delivery = await prismaSingleton.webhookDelivery.create({
@@ -62,7 +62,7 @@ async function send(endpoint: WebhookEndpoint, paymentEvent: PaymentEvent) {
 
 async function dispatch(paymentEvent: PaymentEvent) {
   const subscribedEndpoints =
-    await webhookService.findAllEndpointsSubscribedToEvent(paymentEvent.type);
+    await webhookEndpointService.findAllSubscribedToEvent(paymentEvent.type);
 
   for (const endpoint of subscribedEndpoints) {
     const events = endpoint.events as PaymentEventType[];

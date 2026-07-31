@@ -13,10 +13,7 @@ function generateSecret() {
   return `whsec_${randomBytes(32).toString("hex")}`;
 }
 
-async function createEndpoint(
-  apiKey: string,
-  input: CreateWebhookEndpointInput,
-) {
+async function create(apiKey: string, input: CreateWebhookEndpointInput) {
   const validatedApiKey = await apiKeyService.validate(apiKey);
   return await prismaSingleton.webhookEndpoint.create({
     data: {
@@ -28,14 +25,14 @@ async function createEndpoint(
   });
 }
 
-async function findAllEndpoints() {
+async function findAll() {
   return await prismaSingleton.webhookEndpoint.findMany({
     omit: { secret: true },
     orderBy: { createdAt: "desc" },
   });
 }
 
-async function findEndpointById(endpointId: string) {
+async function findById(endpointId: string) {
   const endpoint = await prismaSingleton.webhookEndpoint.findUnique({
     where: { id: endpointId },
   });
@@ -49,11 +46,8 @@ async function findEndpointById(endpointId: string) {
   return endpoint;
 }
 
-async function updateEndpoint(
-  endpointId: string,
-  input: UpdateWebhookEndpointInput,
-) {
-  const endpoint = await findEndpointById(endpointId);
+async function update(endpointId: string, input: UpdateWebhookEndpointInput) {
+  const endpoint = await findById(endpointId);
   return await prismaSingleton.webhookEndpoint.update({
     where: { id: endpoint.id },
     data: {
@@ -66,15 +60,15 @@ async function updateEndpoint(
   });
 }
 
-async function deleteEndpoint(endpointId: string) {
-  const endpoint = await findEndpointById(endpointId);
+async function remove(endpointId: string) {
+  const endpoint = await findById(endpointId);
   await prismaSingleton.webhookEndpoint.delete({
     where: { id: endpoint.id },
   });
 }
 
-async function rotateEndpointSecret(endpointId: string) {
-  const endpoint = await findEndpointById(endpointId);
+async function rotateSecret(endpointId: string) {
+  const endpoint = await findById(endpointId);
   const secret = generateSecret();
   await prismaSingleton.webhookEndpoint.update({
     where: { id: endpoint.id },
@@ -83,7 +77,7 @@ async function rotateEndpointSecret(endpointId: string) {
   return { secret };
 }
 
-async function findAllEndpointsSubscribedToEvent(event: PaymentEventType) {
+async function findAllSubscribedToEvent(event: PaymentEventType) {
   return await prismaSingleton.$queryRaw<WebhookEndpoint[]>`
     SELECT *
     FROM webhook_endpoints
@@ -91,12 +85,12 @@ async function findAllEndpointsSubscribedToEvent(event: PaymentEventType) {
   `;
 }
 
-export const webhookService = {
-  createEndpoint,
-  findAllEndpoints,
-  findEndpointById,
-  updateEndpoint,
-  deleteEndpoint,
-  rotateEndpointSecret,
-  findAllEndpointsSubscribedToEvent,
+export const webhookEndpointService = {
+  create,
+  findAll,
+  findById,
+  update,
+  remove,
+  rotateSecret,
+  findAllSubscribedToEvent,
 };

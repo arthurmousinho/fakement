@@ -11,7 +11,6 @@ import { prismaSingleton } from "../../config/prisma.ts";
 import type { CreatePaymentInput } from "../schemas/payment.schema.ts";
 import { apiKeyService } from "./api-key.service.ts";
 import { paymentEventService } from "./payment-event.service.ts";
-import { webhookService } from "./webhook.service.ts";
 
 async function create(apiKey: string, input: CreatePaymentInput) {
   const validatedApiKey = await apiKeyService.validate(apiKey);
@@ -60,6 +59,7 @@ async function create(apiKey: string, input: CreatePaymentInput) {
       status: "CREATED",
     },
   });
+
   await paymentEventService.save({
     paymentId: payment.id,
     type: "PAYMENT_CREATED",
