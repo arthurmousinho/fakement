@@ -1,3 +1,4 @@
+import { PaymentEventType } from "@/components/payment-event-type";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -6,6 +7,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import {
   Table,
   TableBody,
@@ -23,7 +29,6 @@ import {
   WebhooksLogoIcon,
   PlusIcon,
   TrashIcon,
-  EyeIcon,
 } from "@phosphor-icons/react";
 
 export function WebhooksPage() {
@@ -73,6 +78,7 @@ export function WebhooksPage() {
             <TableHead className="text-right">URL</TableHead>
             <TableHead className="text-right">Created At</TableHead>
             <TableHead className="text-right">Updated At</TableHead>
+            <TableHead className="text-right">Events</TableHead>
             <TableHead className="text-right">Status</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
@@ -90,6 +96,29 @@ export function WebhooksPage() {
                 {formatDateTime(item.updatedAt)}
               </TableCell>
               <TableCell className="text-right">
+                <HoverCard>
+                  <HoverCardTrigger asChild>
+                    <Badge variant="outline" className="cursor-pointer">
+                      {item.events?.length ?? 0} event
+                      {(item.events?.length ?? 0) !== 1 ? "s" : ""}
+                    </Badge>
+                  </HoverCardTrigger>
+                  <HoverCardContent className="w-64" side="left">
+                    {item.events && item.events.length > 0 ? (
+                      <ul className="flex flex-col gap-1">
+                        {item.events.map((event) => (
+                          <PaymentEventType key={event} type={event} />
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">
+                        No events configured.
+                      </p>
+                    )}
+                  </HoverCardContent>
+                </HoverCard>
+              </TableCell>
+              <TableCell className="text-right">
                 <Badge variant={item.enabled ? "default" : "destructive"}>
                   {item.enabled ? "Active" : "Disabled"}
                 </Badge>
@@ -102,10 +131,6 @@ export function WebhooksPage() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent side="right">
-                    <DropdownMenuItem>
-                      <EyeIcon size={32} />
-                      Details
-                    </DropdownMenuItem>
                     <DropdownMenuItem>
                       <PencilIcon size={32} />
                       Edit
@@ -127,7 +152,7 @@ export function WebhooksPage() {
           {data?.length === 0 && (
             <TableRow>
               <TableCell
-                colSpan={5}
+                colSpan={6}
                 className="py-10 text-center text-muted-foreground"
               >
                 No Webhooks found.
