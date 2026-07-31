@@ -11,6 +11,12 @@ async function findAll() {
   return await prismaSingleton.webhookDelivery.findMany();
 }
 
+async function findAllByEndpointId(endpointId: string) {
+  return await prismaSingleton.webhookDelivery.findMany({
+    where: { endpointId },
+  });
+}
+
 async function send(endpoint: WebhookEndpoint, paymentEvent: PaymentEvent) {
   const delivery = await prismaSingleton.webhookDelivery.create({
     data: {
@@ -79,4 +85,5 @@ export const webhookDeliveryService = {
   send,
   dispatch,
   findAll,
+  findAllByEndpointId,
 };
