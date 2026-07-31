@@ -1,5 +1,4 @@
 import { ApiKeyFormDialog } from "@/components/api-key-form-dialog";
-import { RevealedApiKeyDialog } from "@/components/revealed-api-key-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -33,6 +32,7 @@ import {
   TrashIcon,
 } from "@phosphor-icons/react";
 import { useState } from "react";
+import { RevealedSecretDialog } from "@/components/revealed-secret-dialog";
 
 export function ApiKeysPage() {
   const [rotatedKey, setRotatedKey] = useState<string | null>(null);
@@ -186,7 +186,7 @@ export function ApiKeysPage() {
       >
         <DialogContent className="sm:max-w-sm">
           {rotatedKey && (
-            <RevealedApiKeyDialog
+            <RevealedSecretDialog
               title="API key rotacionada"
               description="Copie sua nova chave agora. Por segurança, ela não será exibida novamente."
               value={rotatedKey}

@@ -30,12 +30,27 @@ export type CreateWebhookEndpointRequestData = {
   apiKey: string;
 };
 
+export type CreateWebhookEndpointResponseData = {
+  id: string;
+  url: string;
+  secret: string;
+  enabled: boolean;
+  events: PaymentEventType[];
+  apiKeyId: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export function CreateWebhookEndpointRequest() {
   return useMutation({
     mutationFn: async (data: CreateWebhookEndpointRequestData) => {
       const headers = { Authorization: `Bearer ${data.apiKey}` };
       const body = { url: data.url, events: data.events };
-      await api.post("webhooks/endpoints", { json: body, headers });
+      const request = await api.post("webhooks/endpoints", {
+        json: body,
+        headers,
+      });
+      return await request.json<CreateWebhookEndpointResponseData>();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["webhooks", "endpoints"] });

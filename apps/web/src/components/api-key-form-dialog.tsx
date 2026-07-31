@@ -23,7 +23,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState, type ReactNode } from "react";
 import { CreateApiKeyRequest } from "@/http/api-keys-http";
-import { RevealedApiKeyDialog } from "@/components/revealed-api-key-dialog";
+import { RevealedSecretDialog } from "./revealed-secret-dialog";
 
 const apiKeySchema = z.object({
   name: z
@@ -77,7 +77,7 @@ export function ApiKeyFormDialog({ children }: ApiKeyFormDialogProps) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-sm">
         {rawKey ? (
-          <RevealedApiKeyDialog
+          <RevealedSecretDialog
             title="API key criada"
             description="Copie sua chave agora. Por segurança, ela não será exibida novamente."
             value={rawKey}

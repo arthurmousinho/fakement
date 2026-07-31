@@ -1,4 +1,3 @@
-// components/revealed-secret-dialog-content.tsx
 import { Button } from "@/components/ui/button";
 import {
   DialogHeader,
@@ -10,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 
-type RevealedApiKeyDialogProps = {
+type RevealedSecretDialogProps = {
   title: string;
   description: string;
   value: string;
@@ -18,13 +17,13 @@ type RevealedApiKeyDialogProps = {
   onDone: () => void;
 };
 
-export function RevealedApiKeyDialog({
+export function RevealedSecretDialog({
   title,
   description,
   value,
   doneLabel = "Concluído",
   onDone,
-}: RevealedApiKeyDialogProps) {
+}: RevealedSecretDialogProps) {
   const { copied, copy } = useCopyToClipboard();
 
   return (
@@ -33,7 +32,6 @@ export function RevealedApiKeyDialog({
         <DialogTitle>{title}</DialogTitle>
         <DialogDescription>{description}</DialogDescription>
       </DialogHeader>
-
       <div className="flex items-center gap-2">
         <Input readOnly value={value} className="font-mono text-sm" />
         <Button
@@ -49,7 +47,6 @@ export function RevealedApiKeyDialog({
           )}
         </Button>
       </div>
-
       <DialogFooter>
         <Button type="button" onClick={onDone}>
           {doneLabel}
