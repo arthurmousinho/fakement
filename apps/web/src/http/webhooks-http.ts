@@ -59,3 +59,21 @@ export function CreateWebhookEndpointRequest() {
     onError: apiErrorHandler,
   });
 }
+
+export type RotateWebhookEndpointResponseData = {
+  secret: string;
+};
+
+export function RotateWebhookEndpointRequest() {
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const request = await api.patch(`webhooks/endpoints/${id}/secret/rotate`);
+      return await request.json<RotateWebhookEndpointResponseData>();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["webhooks", "endpoints"] });
+      toast.success("Webhook endpoint revoked successfully.");
+    },
+    onError: apiErrorHandler,
+  });
+}

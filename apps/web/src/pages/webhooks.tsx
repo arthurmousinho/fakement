@@ -1,6 +1,8 @@
 import { PaymentEventType } from "@/components/payment-event-type";
+import { RevealedSecretDialog } from "@/components/revealed-secret-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,20 +23,28 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { WebhookEndpointFormDialog } from "@/components/webhook-endpoint-form-dialog";
-import { FindAllWebhookEndpointsRequest } from "@/http/webhooks-http";
+import {
+  FindAllWebhookEndpointsRequest,
+  RotateWebhookEndpointRequest,
+} from "@/http/webhooks-http";
 import { formatDateTime } from "@/lib/formatters";
 import {
   PencilIcon,
-  ProhibitIcon,
+  ArrowClockwiseIcon,
   DotsThreeIcon,
   WebhooksLogoIcon,
   PlusIcon,
   TrashIcon,
 } from "@phosphor-icons/react";
+import { useState } from "react";
 
 export function WebhooksPage() {
+  const [rotatedSecret, setRotatedSecret] = useState<string | null>(null);
+
   const { data, isPending, isError, refetch } =
     FindAllWebhookEndpointsRequest();
+  const { mutate: rotateRequest, isPending: isRotating } =
+    RotateWebhookEndpointRequest();
 
   if (isPending) {
     return <div>Loading...</div>;
@@ -49,6 +59,15 @@ export function WebhooksPage() {
         <Button onClick={() => refetch()}>Try again</Button>
       </div>
     );
+  }
+
+  function handleRotate(id: string) {
+    if (isRotating) return;
+    rotateRequest(id, {
+      onSuccess: (response) => {
+        setRotatedSecret(response.secret);
+      },
+    });
   }
 
   return (
@@ -138,9 +157,12 @@ export function WebhooksPage() {
                       <PencilIcon size={32} />
                       Edit
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <ProhibitIcon size={32} />
-                      Revoke
+                    <DropdownMenuItem
+                      onClick={() => handleRotate(item.id)}
+                      disabled={isRotating}
+                    >
+                      <ArrowClockwiseIcon size={32} />
+                      Rotate Secret
                     </DropdownMenuItem>
                     <DropdownMenuItem className="text-destructive">
                       <TrashIcon size={32} />
@@ -164,6 +186,22 @@ export function WebhooksPage() {
           )}
         </TableBody>
       </Table>
+
+      <Dialog
+        open={Boolean(rotatedSecret)}
+        onOpenChange={(open) => !open && setRotatedSecret(null)}
+      >
+        <DialogContent className="sm:max-w-sm">
+          {rotatedSecret && (
+            <RevealedSecretDialog
+              title="Webhook Endpoint Secret Rotate"
+              description="Copy your new secret now. It will not be shown again for security reasons."
+              value={rotatedSecret}
+              onDone={() => setRotatedSecret(null)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
