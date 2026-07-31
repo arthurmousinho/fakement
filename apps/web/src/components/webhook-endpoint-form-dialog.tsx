@@ -124,7 +124,7 @@ export function WebhookEndpointFormDialog({
                 <FormItem>
                   <FormLabel>API Key</FormLabel>
                   <FormControl>
-                    <Input placeholder="457ce23...." {...field} />
+                    <Input placeholder="sK_live_457ce23...." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

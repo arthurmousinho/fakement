@@ -8,7 +8,7 @@ import {
 } from "../../common/http-error.ts";
 
 function generateKeyPair() {
-  const rawKey = crypto.randomBytes(32).toString("hex");
+  const rawKey = `sk_live_${crypto.randomBytes(32).toString("hex")}`;
   const keyHash = crypto.createHash("sha256").update(rawKey).digest("hex");
   return { rawKey, keyHash };
 }
