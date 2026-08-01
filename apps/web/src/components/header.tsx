@@ -85,9 +85,16 @@ export function Header() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Button variant="outline">
-          <GithubLogoIcon size={32} />
-          Star on GitHub
+
+        <Button variant="outline" asChild>
+          <a
+            href="https://github.com/arthurmousinho/fakement"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <GithubLogoIcon size={32} />
+            Star on GitHub
+          </a>
         </Button>
       </nav>
     </Card>
