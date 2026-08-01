@@ -8,6 +8,27 @@ Fakement is an open-source REST API that **simulates** the behavior of a payment
 
 Inspired by tools like Mailcatcher, Fakement provides a predictable and fully local environment for simulating payment flows, webhooks, and transaction lifecycles.
 
+<p align="left">
+  <a href="#motivation">
+    <img src="./.github/motivation-button.png" alt="Motivation" width="260">
+  </a>
+  <a href="#project-status">
+    <img src="./.github/project-status-button.png" alt="Project Status" width="260">
+  </a>
+  <a href="#tech-stack">
+    <img src="./.github/tech-stack-button.png" alt="Tech Stack" width="260">
+  </a>
+  <a href="#architecture">
+    <img src="./.github/architecture-button.png" alt="Architecture" width="260">
+  </a>
+  <a href="#installation">
+    <img src="./.github/installation-button.png" alt="Installation" width="260">
+  </a>
+  <a href="#quick-start">
+    <img src="./.github/quick-start-button.png" alt="Quick Start" width="260">
+  </a>
+</p>
+
 ## Motivation
 
 Integrating with payment providers during development can be slow and frustrating.
