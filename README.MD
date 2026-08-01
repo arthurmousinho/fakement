@@ -74,8 +74,6 @@ Because everything runs locally, developers can build, debug, and reproduce paym
 
 ## Installation
 
-### Prerequisites
-
 Before getting started, make sure you have the following installed:
 
 - **Node.js** 22 or later
@@ -83,55 +81,48 @@ Before getting started, make sure you have the following installed:
 - **Docker** and Docker Compose
 - **Git**
 
-### Clone the repository
+Clone the repository and navigate to the project directory:
 
 ```bash
 git clone https://github.com/arthurmousinho/fakement.git
 cd fakement
 ```
 
-### Install dependencies
+Install all workspace dependencies:
 
 ```bash
 pnpm install
 ```
 
-### Start the database
+Fakement uses MySQL running inside Docker. Start the required containers before running the application:
 
 ```bash
 docker compose up -d
 ```
 
-### Configure the environment
-
-Copy the example environment file:
+Create your local environment configuration by copying the example file:
 
 ```bash
 cp .env.example .env
 ```
 
-Update the variables if necessary.
+The default configuration should work for most development environments, but you can adjust the variables if necessary.
 
-### Run database migrations
+Next, create the database schema using Prisma migrations:
 
 ```bash
 pnpm prisma migrate dev
 ```
 
-### Start the development server
+Finally, start the development environment:
 
 ```bash
 pnpm dev
 ```
 
-Once the server is running, the API will be available at:
+After everything is running, the services will be available at:
 
-```text
-http://localhost:8080
-```
-
-And the web UI will be available at:
-
-```text
-http://localhost:5173
-```
+| Service       | URL                   |
+| ------------- | --------------------- |
+| REST API      | http://localhost:8080 |
+| Web Dashboard | http://localhost:5173 |
