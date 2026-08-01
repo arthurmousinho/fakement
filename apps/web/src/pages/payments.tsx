@@ -1,5 +1,6 @@
 import { PaymentCurrencyBadge } from "@/components/payment-currency-badge";
 import { PaymentDetailsDialog } from "@/components/payment-details-dialog";
+import { PaymentEventsSheet } from "@/components/payment-events-sheet";
 import { PaymentMethodBadge } from "@/components/payment-method-badge";
 import { PaymentStatusBadge } from "@/components/payment-status-badge";
 import { Button } from "@/components/ui/button";
@@ -34,6 +35,7 @@ import {
   CurrencyCircleDollarIcon,
   XIcon,
   EyeIcon,
+  ReceiptIcon,
 } from "@phosphor-icons/react";
 
 export function PaymentsPage() {
@@ -102,6 +104,12 @@ export function PaymentsPage() {
             troubleshoot payment flows from a single place.
           </p>
         </div>
+        <PaymentEventsSheet>
+          <Button variant="secondary">
+            <ReceiptIcon size={18} />
+            View All Events
+          </Button>
+        </PaymentEventsSheet>
       </header>
 
       <Table>

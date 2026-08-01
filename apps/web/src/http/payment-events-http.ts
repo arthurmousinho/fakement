@@ -17,12 +17,13 @@ export type PaymentEvent = {
   payload: Payment;
 };
 
-export function FindAllPaymentEventsRequest() {
+export function FindAllPaymentEventsRequest(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: ["events"],
     queryFn: async () => {
       const request = await api.get("events");
       return await request.json<PaymentEvent[]>();
     },
+    enabled: options?.enabled,
   });
 }

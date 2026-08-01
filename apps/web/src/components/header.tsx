@@ -13,7 +13,6 @@ import {
   KeyIcon,
   WebhooksLogoIcon,
   CurrencyCircleDollarIcon,
-  ReceiptIcon,
   BookOpenIcon,
   GaugeIcon,
   SunIcon,
@@ -26,7 +25,6 @@ import { useTheme } from "./theme-provider";
 const navigationLinks = [
   { label: "Dashboard", href: "/", icon: GaugeIcon },
   { label: "Payments", href: "/payments", icon: CurrencyCircleDollarIcon },
-  { label: "Events", href: "/events", icon: ReceiptIcon },
   { label: "Webhooks", href: "/webhooks", icon: WebhooksLogoIcon },
   { label: "API Keys", href: "/api-keys", icon: KeyIcon },
   { label: "Docs", href: "/docs", icon: BookOpenIcon },
