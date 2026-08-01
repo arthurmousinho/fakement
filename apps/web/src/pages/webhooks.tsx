@@ -22,6 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { WebhookDeliveriesSheet } from "@/components/webhook-deliveries-sheet";
 import { WebhookEndpointFormDialog } from "@/components/webhook-endpoint-form-dialog";
 import {
   DeleteWebhookEndpointRequest,
@@ -36,6 +37,7 @@ import {
   WebhooksLogoIcon,
   PlusIcon,
   TrashIcon,
+  CellTowerIcon,
 } from "@phosphor-icons/react";
 import { useState } from "react";
 
@@ -93,12 +95,20 @@ export function WebhooksPage() {
           </p>
         </div>
 
-        <WebhookEndpointFormDialog>
-          <Button>
-            <PlusIcon size={18} />
-            New Webhook
-          </Button>
-        </WebhookEndpointFormDialog>
+        <nav className="flex items-center gap-2">
+          <WebhookDeliveriesSheet>
+            <Button variant="secondary">
+              <CellTowerIcon size={18} />
+              View All Deliveries
+            </Button>
+          </WebhookDeliveriesSheet>
+          <WebhookEndpointFormDialog>
+            <Button>
+              <PlusIcon size={18} />
+              New Endpoint
+            </Button>
+          </WebhookEndpointFormDialog>
+        </nav>
       </header>
 
       <Table>

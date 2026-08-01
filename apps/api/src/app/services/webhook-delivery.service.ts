@@ -8,7 +8,12 @@ import type {
 import { webhookEndpointService } from "./webhook-endpoint.service.ts";
 
 async function findAll() {
-  return await prismaSingleton.webhookDelivery.findMany();
+  return await prismaSingleton.webhookDelivery.findMany({
+    include: {
+      endpoint: { select: { url: true } },
+    },
+    orderBy: { deliveredAt: "desc" },
+  });
 }
 
 async function findAllByEndpointId(endpointId: string) {

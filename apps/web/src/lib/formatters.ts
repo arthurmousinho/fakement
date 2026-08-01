@@ -1,4 +1,4 @@
-import type { Currency } from "@/components/payment-currency-badge";
+import type { PaymentCurrency } from "@/http/payments-http";
 
 export function formatDateTime(date: Date | string | number): string {
   return new Intl.DateTimeFormat("en-US", {
@@ -11,7 +11,7 @@ export function formatDateTime(date: Date | string | number): string {
   }).format(new Date(date));
 }
 
-const CURRENCY_LOCALE_MAP: Record<Currency, string> = {
+const CURRENCY_LOCALE_MAP: Record<PaymentCurrency, string> = {
   BRL: "pt-BR",
   USD: "en-US",
   EUR: "de-DE",
@@ -19,7 +19,7 @@ const CURRENCY_LOCALE_MAP: Record<Currency, string> = {
 
 export function formatCurrencyFromCents(
   amountInCents: number,
-  currency: Currency,
+  currency: PaymentCurrency,
 ): string {
   const amount = amountInCents / 100;
 

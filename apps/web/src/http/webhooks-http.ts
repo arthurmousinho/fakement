@@ -108,3 +108,25 @@ export function UpdateWebhookEndpointRequest() {
     onError: apiErrorHandler,
   });
 }
+
+export type FindAllWebhookDeliveriesRequestData = {
+  id: string;
+  status: "SUCCESS" | "FAILED";
+  statusCode: number | null;
+  error: string | null;
+  endpointId: string;
+  endpoint: { url: string };
+  paymentEventId: string;
+  deliveredAt: string | null;
+  createdAt: string;
+};
+
+export function FindAllWebhookDeliveriesRequest() {
+  return useQuery({
+    queryKey: ["webhooks", "deliveries"],
+    queryFn: async () => {
+      const response = await api.get(`webhooks/deliveries`);
+      return await response.json<FindAllWebhookDeliveriesRequestData[]>();
+    },
+  });
+}
