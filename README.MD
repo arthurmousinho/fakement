@@ -141,9 +141,25 @@ curl -X POST http://localhost:8080/api-keys \
   }'
 ```
 
-The response contains a `rawKey`. Keep this value safe, as it is the only time it will be returned and it will be required to authenticate future requests.
+The response contains a `rawKey`. Keep this value safe, as it is the only time it will be returned and it will be required to authenticate future requests. Next, register a webhook endpoint. Fakement will send payment events to this URL whenever a payment changes state. Replace `<YOUR_API_KEY>` with the `rawKey` from the previous step.
 
-Next, use the generated API key to create your first mock payment. Replace `<YOUR_API_KEY>` with the `rawKey` you received in the previous step.
+```bash
+curl -X POST http://localhost:8080/webhooks/endpoints \
+  -H "Authorization: Bearer <YOUR_API_KEY>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "http://localhost:3000/api/webhooks/payments",
+    "events": [
+      "PAYMENT_CREATED",
+      "PAYMENT_PROCESSING",
+      "PAYMENT_APPROVED",
+      "PAYMENT_DECLINED",
+      "PAYMENT_CANCELED"
+    ]
+  }'
+```
+
+With a webhook configured, you can now create your first mock payment.
 
 ```bash
 curl -X POST http://localhost:8080/payments \
@@ -159,4 +175,4 @@ curl -X POST http://localhost:8080/payments \
   }'
 ```
 
-If the request succeeds, Fakement will create a new payment and return its details, including the payment identifier and current status. From there, you can continue experimenting with payment state transitions, webhook delivery, idempotency, and other gateway behaviors entirely on your local machine.
+If the request succeeds, Fakement will create a new payment and return its details, including the payment identifier and current status. As the payment lifecycle progresses, Fakement will automatically deliver the configured webhook events to your application, allowing you to test your integration exactly as you would with a real payment gateway.
