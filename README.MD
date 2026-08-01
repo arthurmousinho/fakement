@@ -51,3 +51,67 @@ Because everything runs locally, developers can build, debug, and reproduce paym
 | **Docker**       | Makes Fakement easy to run locally with a consistent environment across operating systems.                              |
 | **Prisma ORM**   | Type-safe ORM used for database access, migrations, and data modeling.                                                  |
 | **MySQL**        | Stores payments, API keys, webhook configurations, events, and other persistent application data.                       |
+
+## Installation
+
+### Prerequisites
+
+Before getting started, make sure you have the following installed:
+
+- **Node.js** 22 or later
+- **pnpm** 10+
+- **Docker** and Docker Compose
+- **Git**
+
+### Clone the repository
+
+```bash
+git clone https://github.com/arthurmousinho/fakement.git
+cd fakement
+```
+
+### Install dependencies
+
+```bash
+pnpm install
+```
+
+### Start the database
+
+```bash
+docker compose up -d
+```
+
+### Configure the environment
+
+Copy the example environment file:
+
+```bash
+cp .env.example .env
+```
+
+Update the variables if necessary.
+
+### Run database migrations
+
+```bash
+pnpm prisma migrate dev
+```
+
+### Start the development server
+
+```bash
+pnpm dev
+```
+
+Once the server is running, the API will be available at:
+
+```text
+http://localhost:8080
+```
+
+And the web UI will be available at:
+
+```text
+http://localhost:5173
+```
