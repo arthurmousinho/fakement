@@ -23,6 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { WebhookDeliveriesSheet } from "@/components/webhook-deliveries-sheet";
+import { WebhookEndpointDeliveriesSheet } from "@/components/webhook-endpoint-deliveries-sheet";
 import { WebhookEndpointFormDialog } from "@/components/webhook-endpoint-form-dialog";
 import {
   DeleteWebhookEndpointRequest,
@@ -165,6 +166,12 @@ export function WebhooksPage() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent side="right">
+                    <WebhookEndpointDeliveriesSheet endpointId={item.id}>
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <CellTowerIcon size={32} />
+                        Deliveries
+                      </DropdownMenuItem>
+                    </WebhookEndpointDeliveriesSheet>
                     <WebhookEndpointFormDialog webhookEndpoint={item}>
                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                         <PencilIcon size={32} />

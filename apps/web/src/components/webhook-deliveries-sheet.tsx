@@ -31,17 +31,19 @@ type WebhookDeliveriesSheetProps = {
 export function WebhookDeliveriesSheet({
   children,
 }: WebhookDeliveriesSheetProps) {
-  const { data, isPending, isError, refetch } =
-    FindAllWebhookDeliveriesRequest();
-
+  const [open, setOpen] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const { data, isPending, isError, refetch } = FindAllWebhookDeliveriesRequest(
+    { enabled: open },
+  );
 
   function toggleExpanded(id: string) {
     setExpandedId((current) => (current === id ? null : id));
   }
 
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent className="flex w-full flex-col gap-0 sm:min-w-[50vw]">
         <SheetHeader>
@@ -166,7 +168,7 @@ export function WebhookDeliveriesSheet({
                                   <dt className="text-xs text-muted-foreground">
                                     Error
                                   </dt>
-                                  <dd className="text-xs">
+                                  <dd className="text-xs text-destructive">
                                     {delivery.error ?? "—"}
                                   </dd>
                                 </div>

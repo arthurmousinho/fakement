@@ -19,6 +19,7 @@ async function findAll() {
 async function findAllByEndpointId(endpointId: string) {
   return await prismaSingleton.webhookDelivery.findMany({
     where: { endpointId },
+    orderBy: { deliveredAt: "desc" },
   });
 }
 

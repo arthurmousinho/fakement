@@ -109,24 +109,46 @@ export function UpdateWebhookEndpointRequest() {
   });
 }
 
-export type FindAllWebhookDeliveriesRequestData = {
+export type WebhookDelivery = {
   id: string;
   status: "SUCCESS" | "FAILED";
   statusCode: number | null;
   error: string | null;
   endpointId: string;
-  endpoint: { url: string };
   paymentEventId: string;
   deliveredAt: string | null;
   createdAt: string;
 };
 
-export function FindAllWebhookDeliveriesRequest() {
+export type FindAllWebhookDeliveriesResponseData = WebhookDelivery & {
+  endpoint: { url: string };
+};
+
+export function FindAllWebhookDeliveriesRequest(options?: {
+  enabled?: boolean;
+}) {
   return useQuery({
     queryKey: ["webhooks", "deliveries"],
     queryFn: async () => {
       const response = await api.get(`webhooks/deliveries`);
-      return await response.json<FindAllWebhookDeliveriesRequestData[]>();
+      return await response.json<FindAllWebhookDeliveriesResponseData[]>();
     },
+    enabled: options?.enabled,
+  });
+}
+
+export function FindAllWebhookEndpointDeliveriesRequest(
+  endpointId: string,
+  options?: { enabled?: boolean },
+) {
+  return useQuery({
+    queryKey: ["webhooks", "deliveries", "endpoint", endpointId],
+    queryFn: async () => {
+      const response = await api.get(
+        `webhooks/deliveries/endpoint/${endpointId}`,
+      );
+      return await response.json<WebhookDelivery[]>();
+    },
+    enabled: options?.enabled,
   });
 }
