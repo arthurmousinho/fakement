@@ -4,7 +4,7 @@
 
 > A local-first fake payment gateway for developing and testing payment integrations.
 
-Fakement is an open-source REST API that simulates the behavior of a payment gateway, allowing developers to build and test payment integrations without relying on external providers, internet connectivity, or sandbox environments.
+Fakement is an open-source REST API that **simulates** the behavior of a payment gateway, allowing developers to build and test payment integrations without relying on external providers, internet connectivity, or sandbox environments.
 
 Inspired by tools like Mailcatcher, Fakement provides a predictable and fully local environment for simulating payment flows, webhooks, and transaction lifecycles.
 
@@ -19,6 +19,26 @@ Integrating with payment providers during development can be slow and frustratin
 - Difficult to reproduce edge cases
 
 Fakement solves these problems by providing a local payment gateway that behaves like a real one.
+
+## Project Status
+
+> **⚠️ Fakement is under development.**
+
+The project is functional but still evolving. Core features are being implemented incrementally, and breaking changes may occur until the first stable release.
+
+| Feature            | Status |
+| ------------------ | :----: |
+| API Keys           |   ✅   |
+| Payment API        |   🚧   |
+| Payment Simulation |   🚧   |
+| Webhooks           |   ✅   |
+| Event Store        |   ✅   |
+| Dashboard          |   🚧   |
+| Refunds            |   📋   |
+| Documentation      |   🚧   |
+| CI/CD              |   📋   |
+
+✅ **Implemented** | 🚧 **In Progress** | 📋 **Planned**
 
 ## Architecture
 
