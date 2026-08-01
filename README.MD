@@ -126,3 +126,37 @@ After everything is running, the services will be available at:
 | ------------- | --------------------- |
 | REST API      | http://localhost:8080 |
 | Web Dashboard | http://localhost:5173 |
+
+## Quick Start
+
+Once Fakement is running, you're ready to start simulating payment flows.
+
+The first step is creating a mock API key. Every request to the Fakement API must be authenticated using an API key, just like a real payment provider.
+
+```bash
+curl -X POST http://localhost:8080/api-keys \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my first api key"
+  }'
+```
+
+The response contains a `rawKey`. Keep this value safe, as it is the only time it will be returned and it will be required to authenticate future requests.
+
+Next, use the generated API key to create your first mock payment. Replace `<YOUR_API_KEY>` with the `rawKey` you received in the previous step.
+
+```bash
+curl -X POST http://localhost:8080/payments \
+  -H "Authorization: Bearer <YOUR_API_KEY>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amountInCents": 500,
+    "currency": "BRL",
+    "method": "PIX",
+    "description": "Order 123",
+    "externalId": "39ef8b2b-fb64-41ac-8ba4-989b36f47b80",
+    "idempotencyKey": "2da31f0f-e4db-4bb9-87dd-6b41ce22a448"
+  }'
+```
+
+If the request succeeds, Fakement will create a new payment and return its details, including the payment identifier and current status. From there, you can continue experimenting with payment state transitions, webhook delivery, idempotency, and other gateway behaviors entirely on your local machine.
