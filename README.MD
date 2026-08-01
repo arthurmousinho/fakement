@@ -1,4 +1,4 @@
-![fakement-banner](./.github/banner.png)
+![Banner](./.github/banner.png)
 
 # Fakement
 
@@ -19,6 +19,22 @@ Integrating with payment providers during development can be slow and frustratin
 - Difficult to reproduce edge cases
 
 Fakement solves these problems by providing a local payment gateway that behaves like a real one.
+
+## Architecture
+
+![Architecture](./.github/architecture.png)
+
+Fakement is designed to fit into your existing application like a real payment provider. Instead of communicating with Stripe, Mercado Pago, Adyen, or another external gateway, your backend sends payment requests to a local Fakement instance.
+
+The flow is straightforward:
+
+1. The user initiates a payment from your application.
+2. Your frontend sends the request to your backend.
+3. Your backend calls the Fakement REST API.
+4. Fakement simulates the payment lifecycle and stores the transaction locally.
+5. If configured, Fakement sends webhook events back to your application, allowing you to test asynchronous payment flows exactly as they would happen in production.
+
+Because everything runs locally, developers can build, debug, and reproduce payment scenarios without internet connectivity, sandbox accounts, or third-party dependencies.
 
 ## Tech Stack
 
