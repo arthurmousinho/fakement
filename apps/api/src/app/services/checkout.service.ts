@@ -33,8 +33,16 @@ async function findAll() {
   return await prismaSingleton.checkout.findMany();
 }
 
+async function getDetails(id: string) {
+  return await prismaSingleton.checkout.findUnique({
+    where: { id },
+    include: { payment: true },
+  });
+}
+
 export const checkoutService = {
   generateLink,
   getGeneratedLinkByPaymentId,
   findAll,
+  getDetails,
 };
