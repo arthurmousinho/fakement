@@ -53,6 +53,7 @@ model ApiKey {
 
   payments         Payment[]
   webhookEndpoints WebhookEndpoint[]
+  checkouts        Checkout[]
 
   @@map("api_keys")
 }
@@ -75,8 +76,9 @@ model Payment {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  apiKey ApiKey         @relation(fields: [apiKeyId], references: [id])
-  events PaymentEvent[]
+  apiKey    ApiKey         @relation(fields: [apiKeyId], references: [id])
+  events    PaymentEvent[]
+  checkouts Checkout[]
 
   @@unique([apiKeyId, externalId])
   @@unique([apiKeyId, idempotencyKey])
@@ -137,4 +139,22 @@ model WebhookDelivery {
   @@index([paymentEventId])
   @@index([status])
   @@map("webhook_deliveries")
+}
+
+model Checkout {
+  id String @id @default(uuid())
+
+  successUrl String @map("success_url")
+  cancelUrl  String @map("cancel_url")
+
+  apiKeyId  String @map("api_key_id")
+  paymentId String @map("payment_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  payment Payment @relation(fields: [paymentId], references: [id])
+  apiKey  ApiKey  @relation(fields: [apiKeyId], references: [id])
+
+  @@index([apiKeyId])
+  @@map("checkouts")
 }
