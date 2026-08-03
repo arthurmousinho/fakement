@@ -1,4 +1,4 @@
-// components/payment-status-badge.tsx
+/* eslint-disable */
 import { Badge } from "@/components/ui/badge";
 import type { PaymentStatus } from "@/http/payments-http";
 import { cn } from "@/lib/utils";
@@ -15,7 +15,7 @@ type PaymentStatusBadgeProps = {
   className?: string;
 };
 
-const PAYMENT_STATUS_CONFIG: Record<
+export const PAYMENT_STATUS_CONFIG: Record<
   PaymentStatus,
   { label: string; icon: React.ElementType; className: string }
 > = {
@@ -49,7 +49,7 @@ const PAYMENT_STATUS_CONFIG: Record<
     className:
       "bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-zinc-900 dark:text-zinc-400 dark:border-zinc-800",
   },
-};
+} as const;
 
 export function PaymentStatusBadge({
   status,

@@ -3,6 +3,7 @@ import { MainLayout } from "../layouts/main-layout";
 import { ApiKeysPage } from "@/pages/api-keys";
 import { PaymentsPage } from "@/pages/payments";
 import { WebhooksPage } from "@/pages/webhooks";
+import { CheckoutPage } from "@/pages/checkout";
 
 export const router = createBrowserRouter([
   {
@@ -15,4 +16,5 @@ export const router = createBrowserRouter([
       { path: "api-keys", element: <ApiKeysPage /> },
     ],
   },
+  { path: "checkout/:id", element: <CheckoutPage /> },
 ]);

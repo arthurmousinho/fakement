@@ -8,7 +8,6 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import {
-  CardholderIcon,
   GithubLogoIcon,
   KeyIcon,
   WebhooksLogoIcon,
@@ -21,6 +20,7 @@ import {
 } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "./theme-provider";
+import { Logo } from "./logo";
 
 const navigationLinks = [
   { label: "Dashboard", href: "/", icon: GaugeIcon },
@@ -35,10 +35,7 @@ export function Header() {
 
   return (
     <Card className="flex flex-row items-center justify-between w-full px-6 py-4 bg-slate-100 dark:bg-muted rounded">
-      <div className="flex items-center gap-2 text-lg font-medium text-primary">
-        <CardholderIcon size={32} />
-        <h1>Fakement</h1>
-      </div>
+      <Logo />
       <nav className="flex items-center space-x-2">
         {navigationLinks.map((link, index) => {
           const Icon = link.icon;
