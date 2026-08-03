@@ -146,7 +146,7 @@ After everything is running, the services will be available at:
 | Service       | URL                   |
 | ------------- | --------------------- |
 | REST API      | http://localhost:8080 |
-| Web Dashboard | http://localhost:5173 |
+| Web Dashboard | http://localhost:4200 |
 
 ## Quick Start
 
