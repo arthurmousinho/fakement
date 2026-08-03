@@ -29,7 +29,12 @@ async function getGeneratedLinkByPaymentId(paymentId: string) {
   return checkout ? buildCheckoutLink(checkout.id) : null;
 }
 
+async function findAll() {
+  return await prismaSingleton.checkout.findMany();
+}
+
 export const checkoutService = {
   generateLink,
   getGeneratedLinkByPaymentId,
+  findAll,
 };
