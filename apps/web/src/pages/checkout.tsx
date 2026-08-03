@@ -19,6 +19,14 @@ import { DetailRow } from "@/components/ui/detail-row";
 import { PaymentStatusBadge } from "@/components/payment-status-badge";
 import { Logo } from "@/components/logo";
 import { formatCurrencyFromCents, formatDateTime } from "@/lib/formatters";
+import { canChangePaymentStatus } from "@/lib/utils";
+import {
+  ApprovePaymentRequest,
+  CancelPaymentRequest,
+  DeclinePaymentRequest,
+  ProcessPaymentRequest,
+  type PaymentStatus,
+} from "@/http/payments-http";
 
 const paymentMethodTabs = [
   { label: "Card", icon: CreditCardIcon },
@@ -28,7 +36,15 @@ const paymentMethodTabs = [
 
 export function CheckoutPage() {
   const { id } = useParams<{ id: string }>();
-  const { data, isPending, isError } = GetCheckoutDetailsRequest(id!);
+  const { data, isPending, isError, refetch } = GetCheckoutDetailsRequest(id!);
+  const { mutate: proccessRequest, isPending: isProcessing } =
+    ProcessPaymentRequest();
+  const { mutate: approveRequest, isPending: isApproving } =
+    ApprovePaymentRequest();
+  const { mutate: declineRequest, isPending: isDeclining } =
+    DeclinePaymentRequest();
+  const { mutate: cancelRequest, isPending: isCanceling } =
+    CancelPaymentRequest();
 
   if (isPending) {
     return <div>Loading...</div>;
@@ -42,6 +58,36 @@ export function CheckoutPage() {
         </p>
       </div>
     );
+  }
+
+  function handleChangeStatus(id: string, status: PaymentStatus) {
+    const requests: Record<PaymentStatus, () => void> = {
+      CREATED: () => {},
+      PROCESSING: () => proccessRequest(id, { onSuccess: () => refetch() }),
+      DECLINED: () => declineRequest(id, { onSuccess: () => refetch() }),
+      APPROVED: () =>
+        approveRequest(id, {
+          onSuccess: () => {
+            if (data?.successUrl) {
+              window.location.href = data.successUrl;
+              return;
+            }
+            refetch();
+          },
+        }),
+      CANCELED: () =>
+        cancelRequest(id, {
+          onSuccess: () => {
+            if (data?.cancelUrl) {
+              window.location.href = data.cancelUrl;
+              return;
+            }
+            refetch();
+          },
+        }),
+    };
+
+    requests[status]();
   }
 
   return (
@@ -183,6 +229,13 @@ export function CheckoutPage() {
                 size="lg"
                 variant="secondary"
                 className="uppercase text-blue-500 flex-1"
+                disabled={
+                  !canChangePaymentStatus(data.payment.status, "PROCESSING") ||
+                  isProcessing
+                }
+                onClick={() =>
+                  handleChangeStatus(data.payment.id, "PROCESSING")
+                }
               >
                 <SpinnerGapIcon size={16} />
                 Process
@@ -191,6 +244,11 @@ export function CheckoutPage() {
                 size="lg"
                 variant="secondary"
                 className="uppercase text-primary flex-1"
+                disabled={
+                  !canChangePaymentStatus(data.payment.status, "APPROVED") ||
+                  isApproving
+                }
+                onClick={() => handleChangeStatus(data.payment.id, "APPROVED")}
               >
                 <CheckCircleIcon size={16} />
                 Approve
@@ -199,6 +257,11 @@ export function CheckoutPage() {
                 size="lg"
                 variant="secondary"
                 className="uppercase text-destructive flex-1"
+                disabled={
+                  !canChangePaymentStatus(data.payment.status, "DECLINED") ||
+                  isDeclining
+                }
+                onClick={() => handleChangeStatus(data.payment.id, "DECLINED")}
               >
                 <XCircleIcon size={16} />
                 Decline
@@ -207,6 +270,11 @@ export function CheckoutPage() {
                 size="lg"
                 variant="secondary"
                 className="uppercase text-destructive flex-1"
+                disabled={
+                  !canChangePaymentStatus(data.payment.status, "CANCELED") ||
+                  isCanceling
+                }
+                onClick={() => handleChangeStatus(data.payment.id, "CANCELED")}
               >
                 <ProhibitIcon />
                 Cancel
