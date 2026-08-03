@@ -27,6 +27,7 @@ import {
   type PaymentStatus,
 } from "@/http/payments-http";
 import { formatCurrencyFromCents, formatDateTime } from "@/lib/formatters";
+import { canChangePaymentStatus } from "@/lib/utils";
 import {
   CheckIcon,
   ArrowClockwiseIcon,
@@ -62,18 +63,6 @@ export function PaymentsPage() {
         <Button onClick={() => refetch()}>Try again</Button>
       </div>
     );
-  }
-
-  function canChange(currentStatus: PaymentStatus, newStatus: PaymentStatus) {
-    const validTransitions: Record<PaymentStatus, PaymentStatus[]> = {
-      CREATED: ["PROCESSING", "CANCELED"],
-      PROCESSING: ["APPROVED", "DECLINED"],
-      APPROVED: ["CANCELED"],
-      DECLINED: [],
-      CANCELED: [],
-    };
-    const allowed = validTransitions[currentStatus];
-    return allowed.includes(newStatus);
   }
 
   function handleChangeStatus(id: string, status: PaymentStatus) {
@@ -162,7 +151,8 @@ export function PaymentsPage() {
                     </PaymentDetailsDialog>
                     <DropdownMenuItem
                       disabled={
-                        !canChange(item.status, "PROCESSING") || isProcessing
+                        !canChangePaymentStatus(item.status, "PROCESSING") ||
+                        isProcessing
                       }
                       onClick={() => handleChangeStatus(item.id, "PROCESSING")}
                     >
@@ -171,7 +161,8 @@ export function PaymentsPage() {
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       disabled={
-                        !canChange(item.status, "APPROVED") || isApproving
+                        !canChangePaymentStatus(item.status, "APPROVED") ||
+                        isApproving
                       }
                       onClick={() => handleChangeStatus(item.id, "APPROVED")}
                     >
@@ -180,7 +171,8 @@ export function PaymentsPage() {
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       disabled={
-                        !canChange(item.status, "DECLINED") || isDeclining
+                        !canChangePaymentStatus(item.status, "DECLINED") ||
+                        isDeclining
                       }
                       onClick={() => handleChangeStatus(item.id, "DECLINED")}
                     >
@@ -189,7 +181,8 @@ export function PaymentsPage() {
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       disabled={
-                        !canChange(item.status, "CANCELED") || isCanceling
+                        !canChangePaymentStatus(item.status, "CANCELED") ||
+                        isCanceling
                       }
                       onClick={() => handleChangeStatus(item.id, "CANCELED")}
                     >
