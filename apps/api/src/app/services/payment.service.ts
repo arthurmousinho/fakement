@@ -10,6 +10,7 @@ import {
 import { prismaSingleton } from "../../config/prisma.ts";
 import type { CreatePaymentInput } from "../schemas/payment.schema.ts";
 import { apiKeyService } from "./api-key.service.ts";
+import { checkoutService } from "./checkout.service.ts";
 import { paymentEventService } from "./payment-event.service.ts";
 
 async function create(apiKey: string, input: CreatePaymentInput) {
@@ -26,7 +27,10 @@ async function create(apiKey: string, input: CreatePaymentInput) {
     });
 
     if (paymentWithIdempotencyKey) {
-      return paymentWithIdempotencyKey;
+      const checkoutLink = await checkoutService.getGeneratedLinkByPaymentId(
+        paymentWithIdempotencyKey.id,
+      );
+      return { ...paymentWithIdempotencyKey, checkoutLink };
     }
   }
 
@@ -60,13 +64,20 @@ async function create(apiKey: string, input: CreatePaymentInput) {
     },
   });
 
+  const checkoutLink = await checkoutService.generateLink({
+    apiKeyId: validatedApiKey.id,
+    paymentId: payment.id,
+  });
+
+  const paymentPayload = { ...payment, checkoutLink };
+
   await paymentEventService.save({
     paymentId: payment.id,
     type: "PAYMENT_CREATED",
-    payload: payment,
+    payload: paymentPayload,
   });
 
-  return payment;
+  return paymentPayload;
 }
 
 async function findAll() {

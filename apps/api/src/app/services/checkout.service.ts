@@ -1,0 +1,35 @@
+import { env } from "../../config/env.ts";
+import { prismaSingleton } from "../../config/prisma.ts";
+import type { GenerateCheckoutLinkInput } from "../schemas/checkout.schema.ts";
+
+function buildCheckoutLink(checkoutId: string) {
+  return `${env.WEB_URL}/checkout/${checkoutId}`;
+}
+
+async function generateLink(input: GenerateCheckoutLinkInput) {
+  const defaultSuccessLink = `${env.WEB_URL}/success-checkout`;
+  const defaultCancelLink = `${env.WEB_URL}/cancel-checkout`;
+
+  const checkout = await prismaSingleton.checkout.create({
+    data: {
+      apiKeyId: input.apiKeyId,
+      paymentId: input.paymentId,
+      successUrl: input.successUrl ?? defaultSuccessLink,
+      cancelUrl: input.cancelUrl ?? defaultCancelLink,
+    },
+  });
+
+  return buildCheckoutLink(checkout.id);
+}
+
+async function getGeneratedLinkByPaymentId(paymentId: string) {
+  const checkout = await prismaSingleton.checkout.findFirst({
+    where: { paymentId },
+  });
+  return checkout ? buildCheckoutLink(checkout.id) : null;
+}
+
+export const checkoutService = {
+  generateLink,
+  getGeneratedLinkByPaymentId,
+};
