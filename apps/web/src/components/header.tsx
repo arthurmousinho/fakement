@@ -27,7 +27,7 @@ const navigationLinks = [
   { label: "Payments", href: "/payments", icon: CurrencyCircleDollarIcon },
   { label: "Webhooks", href: "/webhooks", icon: WebhooksLogoIcon },
   { label: "API Keys", href: "/api-keys", icon: KeyIcon },
-  { label: "Docs", href: "/docs", icon: BookOpenIcon },
+  { label: "API Doc", href: "/api-doc", icon: BookOpenIcon },
 ] as const;
 
 export function Header() {

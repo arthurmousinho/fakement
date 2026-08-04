@@ -4,6 +4,7 @@ import { ApiKeysPage } from "@/pages/api-keys";
 import { PaymentsPage } from "@/pages/payments";
 import { WebhooksPage } from "@/pages/webhooks";
 import { CheckoutPage } from "@/pages/checkout";
+import { ApiDoc } from "@/pages/api-doc";
 
 export const router = createBrowserRouter([
   {
@@ -14,6 +15,7 @@ export const router = createBrowserRouter([
       { path: "payments", element: <PaymentsPage /> },
       { path: "webhooks", element: <WebhooksPage /> },
       { path: "api-keys", element: <ApiKeysPage /> },
+      { path: "api-doc", element: <ApiDoc /> },
     ],
   },
   { path: "checkout/:id", element: <CheckoutPage /> },
