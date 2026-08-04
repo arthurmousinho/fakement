@@ -9,6 +9,7 @@ import { webhookEndpointRoutes } from "./app/routes/webhook-endpoint.routes.ts";
 import { paymentEventRoutes } from "./app/routes/payment-event.routes.ts";
 import { webhookDeliveryRoutes } from "./app/routes/webhook-delivery.routes.ts";
 import { checkoutRoutes } from "./app/routes/checkout.routes.ts";
+import { subcriptionRoutes } from "./app/routes/subscription.routes.ts";
 
 export const appSingleton = createApp();
 
@@ -62,6 +63,7 @@ appSingleton.register(webhookDeliveryRoutes, {
 });
 appSingleton.register(paymentEventRoutes, { prefix: "/events" });
 appSingleton.register(checkoutRoutes, { prefix: "/checkouts" });
+appSingleton.register(subcriptionRoutes, { prefix: "/subscriptions" });
 
 try {
   await appSingleton.listen({
