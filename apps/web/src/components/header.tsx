@@ -17,6 +17,7 @@ import {
   SunIcon,
   MoonIcon,
   DesktopIcon,
+  StarIcon,
 } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "./theme-provider";
@@ -25,6 +26,7 @@ import { Logo } from "./logo";
 const navigationLinks = [
   { label: "Dashboard", href: "/", icon: GaugeIcon },
   { label: "Payments", href: "/payments", icon: CurrencyCircleDollarIcon },
+  { label: "Subscriptions", href: "/subscriptions", icon: StarIcon },
   { label: "Webhooks", href: "/webhooks", icon: WebhooksLogoIcon },
   { label: "API Keys", href: "/api-keys", icon: KeyIcon },
   { label: "API Doc", href: "/api-doc", icon: BookOpenIcon },

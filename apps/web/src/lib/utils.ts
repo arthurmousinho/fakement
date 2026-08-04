@@ -1,4 +1,5 @@
 import type { PaymentStatus } from "@/http/payments-http";
+import type { SubscriptionStatus } from "@/http/subscription-http";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -15,6 +16,19 @@ export function canChangePaymentStatus(
     PROCESSING: ["APPROVED", "DECLINED"],
     APPROVED: ["CANCELED"],
     DECLINED: [],
+    CANCELED: [],
+  };
+  const allowed = validTransitions[currentStatus];
+  return allowed.includes(newStatus);
+}
+
+export function canChangeSubscriptionStatus(
+  currentStatus: SubscriptionStatus,
+  newStatus: SubscriptionStatus,
+) {
+  const validTransitions: Record<SubscriptionStatus, SubscriptionStatus[]> = {
+    ACTIVE: ["PAUSED", "CANCELED"],
+    PAUSED: ["ACTIVE", "CANCELED"],
     CANCELED: [],
   };
   const allowed = validTransitions[currentStatus];

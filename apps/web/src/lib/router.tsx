@@ -7,6 +7,7 @@ import { CheckoutPage } from "@/pages/checkout";
 import { ApiDoc } from "@/pages/api-doc";
 import { CheckoutDefaultSuccessPage } from "@/pages/checkout-default-success";
 import { CheckoutDefaultCancelPage } from "@/pages/checkout-default-cancel";
+import { SubscriptionsPage } from "@/pages/subscriptions";
 
 export const router = createBrowserRouter([
   {
@@ -15,6 +16,7 @@ export const router = createBrowserRouter([
     children: [
       { path: "", element: <h1>dahboard</h1> },
       { path: "payments", element: <PaymentsPage /> },
+      { path: "subscriptions", element: <SubscriptionsPage /> },
       { path: "webhooks", element: <WebhooksPage /> },
       { path: "api-keys", element: <ApiKeysPage /> },
       { path: "api-doc", element: <ApiDoc /> },
