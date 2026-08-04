@@ -6,6 +6,7 @@ import { WebhooksPage } from "@/pages/webhooks";
 import { CheckoutPage } from "@/pages/checkout";
 import { ApiDoc } from "@/pages/api-doc";
 import { CheckoutDefaultSuccessPage } from "@/pages/checkout-default-success";
+import { CheckoutDefaultCancelPage } from "@/pages/checkout-default-cancel";
 
 export const router = createBrowserRouter([
   {
@@ -21,4 +22,5 @@ export const router = createBrowserRouter([
   },
   { path: "checkout/:id", element: <CheckoutPage /> },
   { path: "success-checkout", element: <CheckoutDefaultSuccessPage /> },
+  { path: "cancel-checkout", element: <CheckoutDefaultCancelPage /> },
 ]);
