@@ -21,4 +21,22 @@ export async function subcriptionRoutes(app: FastifyInstance) {
 
     return reply.status(201).send(subscription);
   });
+
+  app.patch("/:id/cancel", async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const subscription = await subscriptionService.changeStatus(id, "CANCELED");
+    return reply.status(200).send(subscription);
+  });
+
+  app.patch("/:id/resume", async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const subscription = await subscriptionService.changeStatus(id, "ACTIVE");
+    return reply.status(200).send(subscription);
+  });
+
+  app.patch("/:id/pause", async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const subscription = await subscriptionService.changeStatus(id, "PAUSED");
+    return reply.status(200).send(subscription);
+  });
 }

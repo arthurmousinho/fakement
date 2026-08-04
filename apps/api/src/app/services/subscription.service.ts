@@ -1,7 +1,11 @@
 import { prismaSingleton } from "../../config/prisma.ts";
 import { apiKeyService } from "./api-key.service.ts";
 import type { CreateSubscriptionSchema } from "../schemas/subscription.schema.ts";
-import type { BillingInterval } from "../../../generated/prisma/enums.ts";
+import type {
+  BillingInterval,
+  SubscriptionStatus,
+} from "../../../generated/prisma/enums.ts";
+import { BadRequestError, NotFoundError } from "../../common/http-error.ts";
 
 function calculateNextBillingDate(interval: BillingInterval) {
   const now = new Date();
@@ -50,7 +54,46 @@ async function findAll() {
   });
 }
 
+async function findById(id: string) {
+  const subscription = await prismaSingleton.subscription.findUnique({
+    where: { id },
+  });
+
+  if (!subscription) {
+    throw new NotFoundError(`Subscription with ID ${id} was not found.`);
+  }
+
+  return subscription;
+}
+
+function validateStatusTransition(
+  currentStatus: SubscriptionStatus,
+  newStatus: SubscriptionStatus,
+) {
+  const validTransitions: Record<SubscriptionStatus, SubscriptionStatus[]> = {
+    ACTIVE: ["PAUSED", "CANCELED"],
+    PAUSED: ["ACTIVE", "CANCELED"],
+    CANCELED: [],
+  };
+  const allowed = validTransitions[currentStatus];
+  if (!allowed.includes(newStatus)) {
+    throw new BadRequestError(
+      `Cannot change subscription status from ${currentStatus} to ${newStatus}.`,
+    );
+  }
+}
+
+async function changeStatus(id: string, newStatus: SubscriptionStatus) {
+  const subscription = await findById(id);
+  validateStatusTransition(subscription.status, newStatus);
+  return await prismaSingleton.subscription.update({
+    where: { id: subscription.id },
+    data: { status: newStatus },
+  });
+}
+
 export const subscriptionService = {
   create,
   findAll,
+  changeStatus,
 };
