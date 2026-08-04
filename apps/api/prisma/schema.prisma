@@ -41,6 +41,19 @@ enum WebhookDeliveryStatus {
   FAILED
 }
 
+enum BillingInterval {
+  DAY
+  WEEK
+  MONTH
+  YEAR
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAUSED
+  CANCELED
+}
+
 model ApiKey {
   id String @id @default(uuid())
 
@@ -54,6 +67,7 @@ model ApiKey {
   payments         Payment[]
   webhookEndpoints WebhookEndpoint[]
   checkouts        Checkout[]
+  subscriptions    Subscription[]
 
   @@map("api_keys")
 }
@@ -157,4 +171,28 @@ model Checkout {
 
   @@index([apiKeyId])
   @@map("checkouts")
+}
+
+model Subscription {
+  id String @id @default(uuid())
+
+  description String?
+
+  amountInCents Int             @map("amount_in_cents")
+  currency      PaymentCurrency
+  method        PaymentMethod
+
+  interval      BillingInterval
+  intervalCount Int             @default(1)
+
+  status SubscriptionStatus @default(ACTIVE)
+
+  nextBillingAt DateTime @map("next_billing_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  apiKeyId String @map("api_key_id")
+  apiKey   ApiKey @relation(fields: [apiKeyId], references: [id])
+
+  @@map("subscriptions")
 }
