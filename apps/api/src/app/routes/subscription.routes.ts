@@ -4,6 +4,11 @@ import type { FastifyInstance } from "fastify";
 import { subscriptionService } from "../services/subscription.service.ts";
 
 export async function subcriptionRoutes(app: FastifyInstance) {
+  app.get("/", async (request, reply) => {
+    const subscriptions = await subscriptionService.findAll();
+    return reply.status(200).send(subscriptions);
+  });
+
   app.post("/", async (request, reply) => {
     const authorization = request.headers.authorization;
     if (!authorization?.startsWith("Bearer ")) {

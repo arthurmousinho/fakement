@@ -42,6 +42,15 @@ async function create(apiKey: string, input: CreateSubscriptionSchema) {
   });
 }
 
+async function findAll() {
+  return await prismaSingleton.subscription.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
+
 export const subscriptionService = {
   create,
+  findAll,
 };
