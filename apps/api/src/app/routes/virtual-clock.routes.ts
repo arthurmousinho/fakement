@@ -17,6 +17,11 @@ export async function virtualClockRoutes(app: FastifyInstance) {
     return reply.status(201).send({ currentDateTime });
   });
 
+  app.post("/reset", async (request, reply) => {
+    const currentDateTime = virtualClockService.reset();
+    return reply.status(201).send({ currentDateTime });
+  });
+
   app.put("/", async (request, reply) => {
     const input = setVirtualClockSchema.parse(request.body);
     const currentDateTime = virtualClockService.set(input);
