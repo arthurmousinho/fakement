@@ -22,6 +22,61 @@ export type Subscription = {
   apiKeyId: string;
 };
 
+export type CreateSubscriptionRequestData = {
+  apiKey: string;
+  amountInCents: number;
+  currency: PaymentCurrency;
+  method: PaymentMethod;
+  interval: SubscriptionInterval;
+  description?: string;
+};
+
+export function CreateSubscriptionRequest() {
+  return useMutation({
+    mutationFn: async (data: CreateSubscriptionRequestData) => {
+      const headers = { Authorization: `Bearer ${data.apiKey}` };
+      const body = {
+        amountInCents: data.amountInCents,
+        currency: data.currency,
+        method: data.method,
+        interval: data.interval,
+        description: data.description,
+      };
+      const request = await api.post(`subscriptions`, { headers, json: body });
+      return await request.json<Subscription>();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+      toast.success("Subscription created successfully.");
+    },
+    onError: apiErrorHandler,
+  });
+}
+
+type UpdateSubscriptionRequestData = Partial<CreateSubscriptionRequestData> & {
+  id: string;
+};
+
+export function UpdateSubscriptionRequest() {
+  return useMutation({
+    mutationFn: async (data: UpdateSubscriptionRequestData) => {
+      const request = await api.patch(`subscriptions/${data.id}`, {
+        json: {
+          ...data,
+          id: undefined,
+          apiKey: undefined,
+        },
+      });
+      return await request.json<Subscription>();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+      toast.success("Subscription updated successfully.");
+    },
+    onError: apiErrorHandler,
+  });
+}
+
 export function FindAllSubscriptionsRequest() {
   return useQuery({
     queryKey: ["subscriptions"],

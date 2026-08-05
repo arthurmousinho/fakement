@@ -1,5 +1,6 @@
 import { PaymentEventsSheet } from "@/components/payment-events-sheet";
 import { PaymentMethodBadge } from "@/components/payment-method-badge";
+import { SubscriptionFormDialog } from "@/components/subscription-form-dialog";
 import { SubscriptionIntervalBadge } from "@/components/subscription-interval-badge";
 import { SubscriptionStatusBadge } from "@/components/subscription-status-badge";
 import { Button } from "@/components/ui/button";
@@ -88,12 +89,12 @@ export function SubscriptionsPage() {
             simulate the complete subscription lifecycle from a single place.
           </p>
         </div>
-        <PaymentEventsSheet>
+        <SubscriptionFormDialog>
           <Button>
             <PlusIcon size={18} />
             New Subscription
           </Button>
-        </PaymentEventsSheet>
+        </SubscriptionFormDialog>
       </header>
 
       <Table>
