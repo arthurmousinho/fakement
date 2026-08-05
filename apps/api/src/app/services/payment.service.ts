@@ -1,7 +1,4 @@
-import type {
-  PaymentEventType,
-  PaymentStatus,
-} from "../../../generated/prisma/enums.ts";
+import type { PaymentStatus } from "../../../generated/prisma/enums.ts";
 import {
   BadRequestError,
   ConflictError,
