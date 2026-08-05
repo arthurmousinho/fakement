@@ -196,3 +196,14 @@ model Subscription {
 
   @@map("subscriptions")
 }
+
+model VirtualClock {
+  id String @id @default("default")
+
+  currentDateTime DateTime @map("current_datetime")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("virtual_clock")
+}
