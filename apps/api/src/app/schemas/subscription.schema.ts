@@ -21,4 +21,26 @@ export const createSubscriptionSchema = z.object({
   interval: z.enum(BillingInterval, { message: "Intervalo inválido" }),
 });
 
-export type CreateSubscriptionSchema = z.infer<typeof createSubscriptionSchema>;
+export type CreateSubscriptionInput = z.infer<typeof createSubscriptionSchema>;
+
+export const updateSubscriptionSchema = z.object({
+  amountInCents: z.coerce
+    .number({ error: "O valor deve ser um número." })
+    .int({ error: "O valor deve ser um número inteiro." })
+    .positive({ error: "O valor deve ser maior que zero." })
+    .optional(),
+  currency: z.enum(PaymentCurrency, { error: "Moeda inválida." }).optional(),
+  method: z
+    .enum(PaymentMethod, { error: "Método de pagamento inválido." })
+    .optional(),
+  description: z
+    .string({ error: "A descrição deve ser um texto." })
+    .trim()
+    .max(255, { error: "A descrição deve ter no máximo 255 caracteres." })
+    .optional(),
+  interval: z
+    .enum(BillingInterval, { message: "Intervalo inválido" })
+    .optional(),
+});
+
+export type UpdateSubscriptionInput = z.infer<typeof updateSubscriptionSchema>;

@@ -1,6 +1,9 @@
 import { prismaSingleton } from "../../config/prisma.ts";
 import { apiKeyService } from "./api-key.service.ts";
-import type { CreateSubscriptionSchema } from "../schemas/subscription.schema.ts";
+import type {
+  CreateSubscriptionInput,
+  UpdateSubscriptionInput,
+} from "../schemas/subscription.schema.ts";
 import type {
   BillingInterval,
   SubscriptionStatus,
@@ -29,7 +32,7 @@ function calculateNextBillingDate(interval: BillingInterval) {
   return nextBillingAt;
 }
 
-async function create(apiKey: string, input: CreateSubscriptionSchema) {
+async function create(apiKey: string, input: CreateSubscriptionInput) {
   const validatedApiKey = await apiKeyService.validate(apiKey);
   return await prismaSingleton.subscription.create({
     data: {
@@ -92,8 +95,26 @@ async function changeStatus(id: string, newStatus: SubscriptionStatus) {
   });
 }
 
+async function update(id: string, input: UpdateSubscriptionInput) {
+  const subscription = await findById(id);
+  return await prismaSingleton.subscription.update({
+    where: { id: subscription.id },
+    data: {
+      ...(input.amountInCents && { amountInCents: input.amountInCents }),
+      ...(input.currency && { currency: input.currency }),
+      ...(input.method && { method: input.method }),
+      ...(input.description && { description: input.description }),
+      ...(input.interval && {
+        interval: input.interval,
+        nextBillingAt: calculateNextBillingDate(input.interval),
+      }),
+    },
+  });
+}
+
 export const subscriptionService = {
   create,
   findAll,
   changeStatus,
+  update,
 };

@@ -1,5 +1,8 @@
 import { UnauthorizedError } from "../../common/http-error.ts";
-import { createSubscriptionSchema } from "../schemas/subscription.schema.ts";
+import {
+  createSubscriptionSchema,
+  updateSubscriptionSchema,
+} from "../schemas/subscription.schema.ts";
 import type { FastifyInstance } from "fastify";
 import { subscriptionService } from "../services/subscription.service.ts";
 
@@ -20,6 +23,13 @@ export async function subcriptionRoutes(app: FastifyInstance) {
     const subscription = await subscriptionService.create(apiKey, input);
 
     return reply.status(201).send(subscription);
+  });
+
+  app.patch("/:id", async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const input = updateSubscriptionSchema.parse(request.body);
+    const updatedSubscription = await subscriptionService.update(id, input);
+    return reply.status(200).send(updatedSubscription);
   });
 
   app.patch("/:id/cancel", async (request, reply) => {
