@@ -6,15 +6,7 @@ import {
   addWeeks,
   addYears,
 } from "date-fns";
-
-type AdvanceOptions = {
-  minutes?: number;
-  hours?: number;
-  days?: number;
-  weeks?: number;
-  months?: number;
-  years?: number;
-};
+import type { AdvanceVirtualClockInput } from "../schemas/virtual-clock.schema.ts";
 
 let currentTimestamp = Date.now();
 
@@ -34,7 +26,7 @@ function advance({
   weeks = 0,
   months = 0,
   years = 0,
-}: AdvanceOptions): Date {
+}: AdvanceVirtualClockInput): Date {
   let nextDate = new Date(currentTimestamp);
 
   nextDate = addMinutes(nextDate, minutes);
