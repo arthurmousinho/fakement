@@ -12,3 +12,11 @@ export const advanceVirtualClockSchema = z.object({
 export type AdvanceVirtualClockInput = z.infer<
   typeof advanceVirtualClockSchema
 >;
+
+export const setVirtualClockSchema = z.object({
+  currentDateTime: z.coerce.date({
+    message: "O valor deve ser uma data válida.",
+  }),
+});
+
+export type SetVirtualClockInput = z.infer<typeof setVirtualClockSchema>;

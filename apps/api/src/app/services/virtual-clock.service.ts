@@ -6,7 +6,10 @@ import {
   addWeeks,
   addYears,
 } from "date-fns";
-import type { AdvanceVirtualClockInput } from "../schemas/virtual-clock.schema.ts";
+import type {
+  AdvanceVirtualClockInput,
+  SetVirtualClockInput,
+} from "../schemas/virtual-clock.schema.ts";
 
 let currentTimestamp = Date.now();
 
@@ -14,8 +17,8 @@ function now(): Date {
   return new Date(currentTimestamp);
 }
 
-function set(date: Date): Date {
-  currentTimestamp = date.getTime();
+function set(input: SetVirtualClockInput): Date {
+  currentTimestamp = input.currentDateTime.getTime();
   return now();
 }
 
