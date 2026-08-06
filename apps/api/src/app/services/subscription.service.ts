@@ -9,31 +9,30 @@ import type {
   SubscriptionStatus,
 } from "../../../generated/prisma/enums.ts";
 import { BadRequestError, NotFoundError } from "../../common/http-error.ts";
+import { virtualClockService } from "./virtual-clock.service.ts";
+import { addDays, addMonths, addWeeks, addYears } from "date-fns";
+import { paymentService } from "./payment.service.ts";
 
-function calculateNextBillingDate(interval: BillingInterval) {
-  const now = new Date();
-  let nextBillingAt: Date;
-
+function calculateNextBillingDate(
+  currentDate: Date,
+  interval: BillingInterval,
+): Date {
   switch (interval) {
     case "DAY":
-      nextBillingAt = new Date(now.setDate(now.getDate() + 1));
-      break;
+      return addDays(currentDate, 1);
     case "WEEK":
-      nextBillingAt = new Date(now.setDate(now.getDate() + 7));
-      break;
+      return addWeeks(currentDate, 1);
     case "MONTH":
-      nextBillingAt = new Date(now.setMonth(now.getMonth() + 1));
-      break;
+      return addMonths(currentDate, 1);
     case "YEAR":
-      nextBillingAt = new Date(now.setFullYear(now.getFullYear() + 1));
-      break;
+      return addYears(currentDate, 1);
   }
-
-  return nextBillingAt;
 }
 
 async function create(apiKey: string, input: CreateSubscriptionInput) {
   const validatedApiKey = await apiKeyService.validate(apiKey);
+  const now = await virtualClockService.now();
+  const billingDate = calculateNextBillingDate(now, input.interval);
   return await prismaSingleton.subscription.create({
     data: {
       apiKeyId: validatedApiKey.id,
@@ -44,16 +43,14 @@ async function create(apiKey: string, input: CreateSubscriptionInput) {
       interval: input.interval,
       intervalCount: 1,
       status: "ACTIVE",
-      nextBillingAt: calculateNextBillingDate(input.interval),
+      nextBillingAt: billingDate,
     },
   });
 }
 
 async function findAll() {
   return await prismaSingleton.subscription.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy: { createdAt: "desc" },
   });
 }
 
@@ -106,10 +103,48 @@ async function update(id: string, input: UpdateSubscriptionInput) {
       ...(input.description && { description: input.description }),
       ...(input.interval && {
         interval: input.interval,
-        nextBillingAt: calculateNextBillingDate(input.interval),
+        nextBillingAt: calculateNextBillingDate(
+          subscription.nextBillingAt,
+          input.interval,
+        ),
       }),
     },
   });
+}
+
+async function processDueSubscriptions() {
+  const now = await virtualClockService.now();
+
+  const dueSubscriptions = await prismaSingleton.subscription.findMany({
+    where: {
+      status: "ACTIVE",
+      nextBillingAt: { lte: now },
+    },
+  });
+
+  let paymentsCreated = 0;
+
+  for (const subscription of dueSubscriptions) {
+    let nextBillingAt = subscription.nextBillingAt;
+
+    while (nextBillingAt <= now) {
+      await paymentService.createRecurringPayment(subscription);
+      nextBillingAt = calculateNextBillingDate(
+        nextBillingAt,
+        subscription.interval,
+      );
+      await prismaSingleton.subscription.update({
+        where: { id: subscription.id },
+        data: { nextBillingAt },
+      });
+      paymentsCreated++;
+    }
+  }
+
+  return {
+    processedSubscriptions: dueSubscriptions.length,
+    paymentsCreated,
+  };
 }
 
 export const subscriptionService = {
@@ -117,4 +152,5 @@ export const subscriptionService = {
   findAll,
   changeStatus,
   update,
+  processDueSubscriptions,
 };

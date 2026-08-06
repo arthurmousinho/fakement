@@ -1,4 +1,6 @@
+import type { Subscription } from "../../../generated/prisma/browser.ts";
 import type { PaymentStatus } from "../../../generated/prisma/enums.ts";
+import type { TransactionClient } from "../../../generated/prisma/internal/prismaNamespace.ts";
 import {
   BadRequestError,
   ConflictError,
@@ -157,10 +159,32 @@ async function changeStatus(id: string, newStatus: PaymentStatus) {
   return updatedPayment;
 }
 
+async function createRecurringPayment(subscription: Subscription) {
+  const payment = await prismaSingleton.payment.create({
+    data: {
+      amountInCents: subscription.amountInCents,
+      currency: subscription.currency,
+      method: subscription.method,
+      description: subscription.description,
+      apiKeyId: subscription.apiKeyId,
+      status: "CREATED",
+    },
+  });
+
+  await paymentEventService.save({
+    paymentId: payment.id,
+    type: "PAYMENT_CREATED",
+    payload: payment,
+  });
+
+  return payment;
+}
+
 export const paymentService = {
   create,
   findAll,
   findById,
   changeStatus,
   getDetails,
+  createRecurringPayment,
 };

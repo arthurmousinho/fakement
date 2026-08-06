@@ -13,8 +13,8 @@ export async function virtualClockRoutes(app: FastifyInstance) {
 
   app.post("/advance", async (request, reply) => {
     const input = advanceVirtualClockSchema.parse(request.body);
-    const currentDateTime = await virtualClockService.advance(input);
-    return reply.status(201).send({ currentDateTime });
+    const advanceResult = await virtualClockService.advance(input);
+    return reply.status(201).send(advanceResult);
   });
 
   app.post("/reset", async (request, reply) => {

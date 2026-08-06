@@ -11,6 +11,7 @@ import type {
   AdvanceVirtualClockInput,
   SetVirtualClockInput,
 } from "../schemas/virtual-clock.schema.ts";
+import { subscriptionService } from "./subscription.service.ts";
 
 const CLOCK_ID = "default";
 
@@ -47,7 +48,7 @@ async function advance({
   weeks = 0,
   months = 0,
   years = 0,
-}: AdvanceVirtualClockInput): Promise<Date> {
+}: AdvanceVirtualClockInput) {
   const currentDateTime = await now();
   let nextDate = currentDateTime;
 
@@ -62,7 +63,11 @@ async function advance({
     where: { id: CLOCK_ID },
     data: { currentDateTime: nextDate },
   });
-  return clock.currentDateTime;
+
+  const processedSubscriptions =
+    await subscriptionService.processDueSubscriptions();
+
+  return { ...clock, ...processedSubscriptions };
 }
 
 async function reset(): Promise<Date> {
