@@ -11,6 +11,7 @@ import { webhookDeliveryRoutes } from "./app/routes/webhook-delivery.routes.ts";
 import { checkoutRoutes } from "./app/routes/checkout.routes.ts";
 import { subcriptionRoutes } from "./app/routes/subscription.routes.ts";
 import { virtualClockRoutes } from "./app/routes/virtual-clock.routes.ts";
+import { virtualClockService } from "./app/services/virtual-clock.service.ts";
 
 export const appSingleton = createApp();
 
@@ -66,6 +67,9 @@ appSingleton.register(paymentEventRoutes, { prefix: "/events" });
 appSingleton.register(checkoutRoutes, { prefix: "/checkouts" });
 appSingleton.register(subcriptionRoutes, { prefix: "/subscriptions" });
 appSingleton.register(virtualClockRoutes, { prefix: "/virtual-clock" });
+
+// Bootstrap
+await virtualClockService.initialize();
 
 try {
   await appSingleton.listen({

@@ -7,24 +7,24 @@ import {
 
 export async function virtualClockRoutes(app: FastifyInstance) {
   app.get("/", async (request, reply) => {
-    const currentDateTime = virtualClockService.now();
+    const currentDateTime = await virtualClockService.now();
     return reply.status(200).send({ currentDateTime });
   });
 
   app.post("/advance", async (request, reply) => {
     const input = advanceVirtualClockSchema.parse(request.body);
-    const currentDateTime = virtualClockService.advance(input);
+    const currentDateTime = await virtualClockService.advance(input);
     return reply.status(201).send({ currentDateTime });
   });
 
   app.post("/reset", async (request, reply) => {
-    const currentDateTime = virtualClockService.reset();
+    const currentDateTime = await virtualClockService.reset();
     return reply.status(201).send({ currentDateTime });
   });
 
   app.put("/", async (request, reply) => {
     const input = setVirtualClockSchema.parse(request.body);
-    const currentDateTime = virtualClockService.set(input);
+    const currentDateTime = await virtualClockService.set(input);
     return reply.status(200).send({ currentDateTime });
   });
 }

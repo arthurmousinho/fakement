@@ -6,31 +6,50 @@ import {
   addWeeks,
   addYears,
 } from "date-fns";
+import { prismaSingleton } from "../../config/prisma.ts";
 import type {
   AdvanceVirtualClockInput,
   SetVirtualClockInput,
 } from "../schemas/virtual-clock.schema.ts";
 
-let currentTimestamp = Date.now();
+const CLOCK_ID = "default";
 
-function now(): Date {
-  return new Date(currentTimestamp);
+async function initialize() {
+  await prismaSingleton.virtualClock.upsert({
+    where: { id: CLOCK_ID },
+    update: {},
+    create: {
+      id: CLOCK_ID,
+      currentDateTime: new Date(),
+    },
+  });
 }
 
-function set(input: SetVirtualClockInput): Date {
-  currentTimestamp = input.currentDateTime.getTime();
-  return now();
+async function now(): Promise<Date> {
+  const clock = await prismaSingleton.virtualClock.findUniqueOrThrow({
+    where: { id: CLOCK_ID },
+  });
+  return clock.currentDateTime;
 }
 
-function advance({
+async function set(input: SetVirtualClockInput): Promise<Date> {
+  const clock = await prismaSingleton.virtualClock.update({
+    where: { id: CLOCK_ID },
+    data: { currentDateTime: input.currentDateTime },
+  });
+  return clock.currentDateTime;
+}
+
+async function advance({
   minutes = 0,
   hours = 0,
   days = 0,
   weeks = 0,
   months = 0,
   years = 0,
-}: AdvanceVirtualClockInput): Date {
-  let nextDate = new Date(currentTimestamp);
+}: AdvanceVirtualClockInput): Promise<Date> {
+  const currentDateTime = await now();
+  let nextDate = currentDateTime;
 
   nextDate = addMinutes(nextDate, minutes);
   nextDate = addHours(nextDate, hours);
@@ -39,17 +58,23 @@ function advance({
   nextDate = addMonths(nextDate, months);
   nextDate = addYears(nextDate, years);
 
-  currentTimestamp = nextDate.getTime();
-
-  return now();
+  const clock = await prismaSingleton.virtualClock.update({
+    where: { id: CLOCK_ID },
+    data: { currentDateTime: nextDate },
+  });
+  return clock.currentDateTime;
 }
 
-function reset(): Date {
-  currentTimestamp = Date.now();
-  return now();
+async function reset(): Promise<Date> {
+  const clock = await prismaSingleton.virtualClock.update({
+    where: { id: CLOCK_ID },
+    data: { currentDateTime: new Date() },
+  });
+  return clock.currentDateTime;
 }
 
 export const virtualClockService = {
+  initialize,
   now,
   set,
   advance,
