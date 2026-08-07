@@ -24,7 +24,7 @@ export async function virtualClockRoutes(app: FastifyInstance) {
 
   app.put("/", async (request, reply) => {
     const input = setVirtualClockSchema.parse(request.body);
-    const currentDateTime = await virtualClockService.set(input);
-    return reply.status(200).send({ currentDateTime });
+    const setResult = await virtualClockService.set(input);
+    return reply.status(200).send(setResult);
   });
 }

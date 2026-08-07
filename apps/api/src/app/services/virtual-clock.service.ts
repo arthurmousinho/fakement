@@ -33,12 +33,16 @@ async function now(): Promise<Date> {
   return clock.currentDateTime;
 }
 
-async function set(input: SetVirtualClockInput): Promise<Date> {
+async function set(input: SetVirtualClockInput) {
   const clock = await prismaSingleton.virtualClock.update({
     where: { id: CLOCK_ID },
     data: { currentDateTime: input.currentDateTime },
   });
-  return clock.currentDateTime;
+
+  const processedSubscriptions =
+    await subscriptionService.processDueSubscriptions();
+
+  return { ...clock, ...processedSubscriptions };
 }
 
 async function advance({
