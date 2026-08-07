@@ -1,5 +1,5 @@
 {
-  "name": "@fakement/api",
+  "name": "@mockment/api",
   "private": true,
   "type": "module",
   "dependencies": {

@@ -104,7 +104,7 @@ export function CheckoutPage() {
               <div className="flex flex-col justify-between gap-8 p-8">
                 <div>
                   <Logo
-                    href="https://github.com/arthurmousinho/fakement"
+                    href="https://github.com/arthurmousinho/mockment"
                     target="_blank"
                   />
                   <p className="mt-10 text-muted-foreground">

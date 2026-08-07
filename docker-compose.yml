@@ -1,7 +1,9 @@
+name: mockment
+
 services:
   mysql:
     image: mysql:9.4
-    container_name: fakement-mysql
+    container_name: mockment-mysql
 
     restart: unless-stopped
 
@@ -10,7 +12,7 @@ services:
 
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: fakement
+      MYSQL_DATABASE: mockment
 
     volumes:
       - mysql-data:/var/lib/mysql

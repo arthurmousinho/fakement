@@ -85,7 +85,7 @@ export function Header() {
 
         <Button variant="outline" asChild>
           <a
-            href="https://github.com/arthurmousinho/fakement"
+            href="https://github.com/arthurmousinho/mockment"
             target="_blank"
             rel="noopener noreferrer"
           >

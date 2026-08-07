@@ -2,15 +2,15 @@
 
 # Contributing
 
-First of all, thank you for considering contributing to Fakement! 💚
+First of all, thank you for considering contributing to Mockment! 💚
 
-Fakement is an open-source project whose goal is to provide a local-first payment gateway for developers to build, test, and debug payment integrations without relying on external providers or unstable sandbox environments.
+Mockment is an open-source project whose goal is to provide a local-first payment gateway for developers to build, test, and debug payment integrations without relying on external providers or unstable sandbox environments.
 
 Every contribution is appreciated, whether it is fixing a bug, improving the documentation, implementing a feature, or simply suggesting an idea.
 
 ## Project Philosophy
 
-Fakement is designed around a few core principles:
+Mockment is designed around a few core principles:
 
 - **Local-first** — Everything should run entirely on the developer's machine.
 - **Developer Experience** — APIs should be simple, predictable, and pleasant to use.
@@ -163,7 +163,7 @@ The more information you provide, the easier it is to reproduce and fix the issu
 
 ## Feature Requests
 
-One of Fakement's goals is to simulate the behavior of real-world payment gateways while remaining lightweight and easy to understand.
+One of Mockment's goals is to simulate the behavior of real-world payment gateways while remaining lightweight and easy to understand.
 
 If you have ideas that improve the developer experience without making the project unnecessarily complex, we'd love to hear them.
 
@@ -185,6 +185,6 @@ We're happy to help.
 
 Open source only exists because people choose to contribute.
 
-Whether you're fixing a typo, reporting a bug, improving documentation, or implementing a major feature, your contribution helps make Fakement better for developers everywhere.
+Whether you're fixing a typo, reporting a bug, improving documentation, or implementing a major feature, your contribution helps make Mockment better for developers everywhere.
 
 Thank you for being part of the project. 🚀

@@ -13,7 +13,7 @@ export function Logo({ href = "/", target = "_self" }: LogoProps) {
       className="flex items-center gap-2 text-lg font-medium text-primary cursor-pointer"
     >
       <CardholderIcon size={32} />
-      <h1>Fakement</h1>
+      <h1>Mockment</h1>
     </a>
   );
 }

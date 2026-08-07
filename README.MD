@@ -1,12 +1,12 @@
 ![Banner](./.github/banner.png)
 
-# Fakement
+# Mockment
 
 > A local-first fake payment gateway for developing and testing payment integrations.
 
-Fakement is an open-source REST API that **simulates** the behavior of a payment gateway, allowing developers to build and test payment integrations without relying on external providers, internet connectivity, or sandbox environments.
+Mockment is an open-source REST API that **simulates** the behavior of a payment gateway, allowing developers to build and test payment integrations without relying on external providers, internet connectivity, or sandbox environments.
 
-Inspired by tools like Mailcatcher, Fakement provides a predictable and fully local environment for simulating payment flows, webhooks, and transaction lifecycles.
+Inspired by tools like Mailcatcher, Mockment provides a predictable and fully local environment for simulating payment flows, webhooks, and transaction lifecycles.
 
 <p align="left">
   <a href="#motivation">
@@ -39,11 +39,11 @@ Integrating with payment providers during development can be slow and frustratin
 - Different providers expose different APIs
 - Difficult to reproduce edge cases
 
-Fakement solves these problems by providing a local payment gateway that behaves like a real one.
+Mockment solves these problems by providing a local payment gateway that behaves like a real one.
 
 ## Project Status
 
-> **⚠️ Fakement is under development.**
+> **⚠️ Mockment is under development.**
 
 The project is functional but still evolving. Core features are being implemented incrementally, and breaking changes may occur until the first stable release.
 
@@ -65,31 +65,31 @@ The project is functional but still evolving. Core features are being implemente
 
 ![Architecture](./.github/architecture.png)
 
-Fakement is designed to fit into your existing application like a real payment provider. Instead of communicating with Stripe, Mercado Pago, Adyen, or another external gateway, your backend sends payment requests to a local Fakement instance.
+Mockment is designed to fit into your existing application like a real payment provider. Instead of communicating with Stripe, Mercado Pago, Adyen, or another external gateway, your backend sends payment requests to a local Mockment instance.
 
 The flow is straightforward:
 
 1. The user initiates a payment from your application.
 2. Your frontend sends the request to your backend.
-3. Your backend calls the Fakement REST API.
-4. Fakement simulates the payment lifecycle and stores the transaction locally.
-5. If configured, Fakement sends webhook events back to your application, allowing you to test asynchronous payment flows exactly as they would happen in production.
+3. Your backend calls the Mockment REST API.
+4. Mockment simulates the payment lifecycle and stores the transaction locally.
+5. If configured, Mockment sends webhook events back to your application, allowing you to test asynchronous payment flows exactly as they would happen in production.
 
 Because everything runs locally, developers can build, debug, and reproduce payment scenarios without internet connectivity, sandbox accounts, or third-party dependencies.
 
 ## Tech Stack
 
-![fakement-banner](./.github/tech-stack.png)
+![mockment-banner](./.github/tech-stack.png)
 
 | Technology       | Why it's used                                                                                                           |
 | ---------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | **React**        | Powers the dashboard used to manage API keys, inspect payments, configure webhooks, and monitor simulated transactions. |
 | **Tailwind CSS** | Utility-first CSS framework used to build a modern, responsive, and maintainable interface.                             |
 | **shadcn/ui**    | Provides accessible, reusable UI components built on Radix UI, enabling a consistent developer experience.              |
-| **Node.js**      | JavaScript runtime that powers the Fakement backend and its high-performance REST API.                                  |
+| **Node.js**      | JavaScript runtime that powers the Mockment backend and its high-performance REST API.                                  |
 | **Fastify**      | Fast and lightweight web framework responsible for routing, validation, plugins, and HTTP handling.                     |
 | **Zod**          | Runtime schema validation and TypeScript type inference for requests, responses, configuration and UI forms.            |
-| **Docker**       | Makes Fakement easy to run locally with a consistent environment across operating systems.                              |
+| **Docker**       | Makes Mockment easy to run locally with a consistent environment across operating systems.                              |
 | **Prisma ORM**   | Type-safe ORM used for database access, migrations, and data modeling.                                                  |
 | **MySQL**        | Stores payments, API keys, webhook configurations, events, and other persistent application data.                       |
 
@@ -105,8 +105,8 @@ Before getting started, make sure you have the following installed:
 Clone the repository and navigate to the project directory:
 
 ```bash
-git clone https://github.com/arthurmousinho/fakement.git
-cd fakement
+git clone https://github.com/arthurmousinho/mockment.git
+cd mockment
 ```
 
 Install all workspace dependencies:
@@ -115,7 +115,7 @@ Install all workspace dependencies:
 pnpm install
 ```
 
-Fakement uses MySQL running inside Docker. Start the required containers before running the application:
+Mockment uses MySQL running inside Docker. Start the required containers before running the application:
 
 ```bash
 docker compose up -d
@@ -150,9 +150,9 @@ After everything is running, the services will be available at:
 
 ## Quick Start
 
-Once Fakement is running, you're ready to start simulating payment flows.
+Once Mockment is running, you're ready to start simulating payment flows.
 
-The first step is creating a mock API key. Every request to the Fakement API must be authenticated using an API key, just like a real payment provider.
+The first step is creating a mock API key. Every request to the Mockment API must be authenticated using an API key, just like a real payment provider.
 
 ```bash
 curl -X POST http://localhost:8080/api-keys \
@@ -162,7 +162,7 @@ curl -X POST http://localhost:8080/api-keys \
   }'
 ```
 
-The response contains a `rawKey`. Keep this value safe, as it is the only time it will be returned and it will be required to authenticate future requests. Next, register a webhook endpoint. Fakement will send payment events to this URL whenever a payment changes state. Replace `<YOUR_API_KEY>` with the `rawKey` from the previous step.
+The response contains a `rawKey`. Keep this value safe, as it is the only time it will be returned and it will be required to authenticate future requests. Next, register a webhook endpoint. Mockment will send payment events to this URL whenever a payment changes state. Replace `<YOUR_API_KEY>` with the `rawKey` from the previous step.
 
 ```bash
 curl -X POST http://localhost:8080/webhooks/endpoints \
@@ -196,4 +196,4 @@ curl -X POST http://localhost:8080/payments \
   }'
 ```
 
-If the request succeeds, Fakement will create a new payment and return its details, including the payment identifier and current status. As the payment lifecycle progresses, Fakement will automatically deliver the configured webhook events to your application, allowing you to test your integration exactly as you would with a real payment gateway.
+If the request succeeds, Mockment will create a new payment and return its details, including the payment identifier and current status. As the payment lifecycle progresses, Mockment will automatically deliver the configured webhook events to your application, allowing you to test your integration exactly as you would with a real payment gateway.
