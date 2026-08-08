@@ -50,6 +50,7 @@ enum BillingInterval {
 
 enum SubscriptionStatus {
   ACTIVE
+  PENDING
   PAUSED
   CANCELED
 }
@@ -161,13 +162,15 @@ model Checkout {
   successUrl String @map("success_url")
   cancelUrl  String @map("cancel_url")
 
-  apiKeyId  String @map("api_key_id")
-  paymentId String @map("payment_id")
+  apiKeyId       String  @map("api_key_id")
+  paymentId      String  @map("payment_id")
+  subscriptionId String? @map("subscription_id")
 
   createdAt DateTime @default(now()) @map("created_at")
 
-  payment Payment @relation(fields: [paymentId], references: [id])
-  apiKey  ApiKey  @relation(fields: [apiKeyId], references: [id])
+  payment      Payment       @relation(fields: [paymentId], references: [id])
+  apiKey       ApiKey        @relation(fields: [apiKeyId], references: [id])
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id])
 
   @@index([apiKeyId])
   @@map("checkouts")
@@ -185,14 +188,15 @@ model Subscription {
   interval      BillingInterval
   intervalCount Int             @default(1)
 
-  status SubscriptionStatus @default(ACTIVE)
+  status SubscriptionStatus @default(PENDING)
 
-  nextBillingAt DateTime @map("next_billing_at")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  nextBillingAt DateTime? @map("next_billing_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
 
-  apiKeyId String @map("api_key_id")
-  apiKey   ApiKey @relation(fields: [apiKeyId], references: [id])
+  apiKeyId  String     @map("api_key_id")
+  apiKey    ApiKey     @relation(fields: [apiKeyId], references: [id])
+  checkouts Checkout[]
 
   @@map("subscriptions")
 }
