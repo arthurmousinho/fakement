@@ -1,6 +1,10 @@
+import { NotFoundError } from "../../common/http-error.ts";
 import { env } from "../../config/env.ts";
 import { prismaSingleton } from "../../config/prisma.ts";
-import type { GenerateCheckoutLinkInput } from "../schemas/checkout.schema.ts";
+import type {
+  CheckoutCompletionStatus,
+  GenerateCheckoutLinkInput,
+} from "../schemas/checkout.schema.ts";
 import { paymentService } from "./payment.service.ts";
 
 function buildCheckoutLink(checkoutId: string) {
@@ -41,10 +45,16 @@ async function findAll() {
 }
 
 async function getDetails(id: string) {
-  return await prismaSingleton.checkout.findUnique({
+  const checkout = await prismaSingleton.checkout.findUnique({
     where: { id },
     include: { payment: true, subscription: true },
   });
+
+  if (!checkout) {
+    throw new NotFoundError(`Checkout with ID ${id} was not found.`);
+  }
+
+  return checkout;
 }
 
 export const checkoutService = {

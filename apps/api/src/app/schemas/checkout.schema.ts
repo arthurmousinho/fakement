@@ -5,3 +5,5 @@ export type GenerateCheckoutLinkInput = {
   successUrl?: string;
   cancelUrl?: string;
 };
+
+export type CheckoutCompletionStatus = "APPROVED" | "DECLINED" | "CANCELED";
