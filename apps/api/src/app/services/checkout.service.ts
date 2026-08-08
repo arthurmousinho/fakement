@@ -1,12 +1,18 @@
 import { env } from "../../config/env.ts";
 import { prismaSingleton } from "../../config/prisma.ts";
 import type { GenerateCheckoutLinkInput } from "../schemas/checkout.schema.ts";
+import { paymentService } from "./payment.service.ts";
 
 function buildCheckoutLink(checkoutId: string) {
   return `${env.WEB_URL}/checkout/${checkoutId}`;
 }
 
 async function generateLink(input: GenerateCheckoutLinkInput) {
+  const payment = await paymentService.findById(input.paymentId);
+  if (payment.status !== "CREATED") {
+    throw new Error("Only payment in CREATED state can be checked out.");
+  }
+
   const defaultSuccessLink = `${env.WEB_URL}/success-checkout`;
   const defaultCancelLink = `${env.WEB_URL}/cancel-checkout`;
 
