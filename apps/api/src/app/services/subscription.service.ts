@@ -12,6 +12,7 @@ import { BadRequestError, NotFoundError } from "../../common/http-error.ts";
 import { virtualClockService } from "./virtual-clock.service.ts";
 import { addDays, addMonths, addWeeks, addYears } from "date-fns";
 import { paymentService } from "./payment.service.ts";
+import { checkoutService } from "./checkout.service.ts";
 
 function calculateNextBillingDate(
   currentDate: Date,
@@ -31,9 +32,12 @@ function calculateNextBillingDate(
 
 async function create(apiKey: string, input: CreateSubscriptionInput) {
   const validatedApiKey = await apiKeyService.validate(apiKey);
-  const now = await virtualClockService.now();
-  const billingDate = calculateNextBillingDate(now, input.interval);
-  return await prismaSingleton.subscription.create({
+
+  // TODO: This logic must be moved to an `activateSubscription` function
+  // const now = await virtualClockService.now();
+  // const billingDate = calculateNextBillingDate(now, input.interval);
+
+  const pendingSubscription = await prismaSingleton.subscription.create({
     data: {
       apiKeyId: validatedApiKey.id,
       amountInCents: input.amountInCents,
@@ -42,10 +46,28 @@ async function create(apiKey: string, input: CreateSubscriptionInput) {
       description: input.description ?? null,
       interval: input.interval,
       intervalCount: 1,
-      status: "ACTIVE",
-      nextBillingAt: billingDate,
+      status: "PENDING",
+      nextBillingAt: null,
     },
   });
+
+  const initPayment = await paymentService.create(apiKey, {
+    amountInCents: input.amountInCents,
+    currency: input.currency,
+    method: input.method,
+    description: input.description,
+  });
+
+  const checkoutLink = await checkoutService.generateLink({
+    apiKeyId: validatedApiKey.id,
+    paymentId: initPayment.id,
+    subscriptionId: pendingSubscription.id,
+  });
+
+  return {
+    ...pendingSubscription,
+    checkoutLink,
+  };
 }
 
 async function findAll() {
@@ -73,6 +95,7 @@ function validateStatusTransition(
   const validTransitions: Record<SubscriptionStatus, SubscriptionStatus[]> = {
     ACTIVE: ["PAUSED", "CANCELED"],
     PAUSED: ["ACTIVE", "CANCELED"],
+    PENDING: ["ACTIVE", "CANCELED"],
     CANCELED: [],
   };
   const allowed = validTransitions[currentStatus];
@@ -101,12 +124,11 @@ async function update(id: string, input: UpdateSubscriptionInput) {
       ...(input.currency && { currency: input.currency }),
       ...(input.method && { method: input.method }),
       ...(input.description && { description: input.description }),
-      ...(input.interval && {
+      ...(input.interval !== undefined && {
         interval: input.interval,
-        nextBillingAt: calculateNextBillingDate(
-          subscription.nextBillingAt,
-          input.interval,
-        ),
+        nextBillingAt: subscription.nextBillingAt
+          ? calculateNextBillingDate(subscription.nextBillingAt, input.interval)
+          : null,
       }),
     },
   });
@@ -125,6 +147,7 @@ async function processDueSubscriptions() {
   let paymentsCreated = 0;
 
   for (const subscription of dueSubscriptions) {
+    if (!subscription.nextBillingAt) continue;
     let nextBillingAt = subscription.nextBillingAt;
 
     while (nextBillingAt <= now) {

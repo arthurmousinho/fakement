@@ -22,6 +22,7 @@ async function generateLink(input: GenerateCheckoutLinkInput) {
       paymentId: input.paymentId,
       successUrl: input.successUrl ?? defaultSuccessLink,
       cancelUrl: input.cancelUrl ?? defaultCancelLink,
+      subscriptionId: input.subscriptionId ?? null,
     },
   });
 
@@ -42,7 +43,7 @@ async function findAll() {
 async function getDetails(id: string) {
   return await prismaSingleton.checkout.findUnique({
     where: { id },
-    include: { payment: true },
+    include: { payment: true, subscription: true },
   });
 }
 
